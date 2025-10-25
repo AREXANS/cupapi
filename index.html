@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Kontrol Multi-Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #111827; }
+        .form-input, .role-select { background-color: #374151; border-color: #4b5563; color: #f3f4f6; }
+        .form-input:focus, .role-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px #1e40af; }
+        .btn { transition: all 0.2s; }
+        .btn-primary { background-color: #2563eb; } .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: #4b5563; } .btn-secondary:hover { background-color: #525f71; }
+        .btn-pending { background-color: #ca8a04; box-shadow: 0 0 12px rgba(202, 138, 4, 0.6); animation: pulse 2s infinite; }
+        .btn-pending:hover { background-color: #a16207; }
+        .btn-disabled { background-color: #4b5563; cursor: not-allowed; opacity: 0.6; }
+        [hidden] { display: none; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .85; }
+        }
+        tr[data-role="Normal"] { color: lightgreen; }
+        tr[data-role="VIP"] { color: violet; }
+        tr[data-role="Developer"] { color: deepskyblue; }
+        tr[data-role="Free"] { color: gray; }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <div class="container mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
+        
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-white">Panel Kontrol Multi-Password</h1>
+            <p class="text-gray-400 mt-2">Tambah, edit, hapus, dan kelola semua kunci lisensi untuk skrip Anda.</p>
+        </div>
+        
+        <div class="bg-red-900 border-l-4 border-red-500 text-red-100 p-4 rounded-r-lg mb-6" role="alert">
+          <p class="font-bold">Peringatan Keamanan</p>
+          <p class="text-sm">Token Akses GitHub Anda mungkin tersimpan di skrip. Jangan pernah membagikan file ini kepada siapa pun.</p>
+        </div>
+
+        <!-- Bagian Daftar Kunci -->
+        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-white">Daftar Kunci Lisensi</h2>
+                    <p class="text-sm text-gray-400 mt-1">Repo: <span id="repoInfo" class="font-mono"></span></p>
+                </div>
+                <button id="fetchButton" class="w-full sm:w-auto mt-4 sm:mt-0 py-2 px-4 rounded-md font-semibold text-white btn btn-primary flex items-center justify-center gap-2">
+                    <svg id="fetch-icon-default" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9H3.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a9 9 0 0 1 9 9Z"></path><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path></svg>
+                    <svg id="fetch-icon-loading" class="animate-spin hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                    <span>Muat Ulang Data</span>
+                </button>
+            </div>
+            
+            <div id="loader" class="text-center py-8 text-gray-400 hidden">Memuat data...</div>
+            <div class="overflow-x-auto mt-6">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Password</th>
+                            <th scope="col" class="px-6 py-3">Kedaluwarsa</th>
+                            <th scope="col" class="px-6 py-3">Role</th>
+                            <th scope="col" class="px-6 py-3 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="password-list">
+                        <!-- Rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bagian Tambah Kunci -->
+        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 mt-6">
+            <h2 class="text-xl font-semibold text-white mb-4">Tambah Kunci Baru</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                <div>
+                    <label for="new-password" class="block text-sm font-medium text-gray-300 mb-1">Kata Sandi Baru</label>
+                    <input type="text" id="new-password" placeholder="Contoh: KunciPremium123" class="w-full rounded-md form-input">
+                </div>
+                <div>
+                    <label for="new-expiration" class="block text-sm font-medium text-gray-300 mb-1">Waktu Kedaluwarsa</label>
+                    <input type="datetime-local" id="new-expiration" class="w-full rounded-md form-input">
+                    <div class="flex space-x-2 mt-2">
+                        <button class="time-btn btn btn-secondary text-xs px-2 py-1 rounded" data-days="1">+1 Hari</button>
+                        <button class="time-btn btn btn-secondary text-xs px-2 py-1 rounded" data-days="7">+7 Hari</button>
+                        <button class="time-btn btn btn-secondary text-xs px-2 py-1 rounded" data-days="30">+30 Hari</button>
+                        <button class="time-btn btn btn-secondary text-xs px-2 py-1 rounded" data-days="365">+1 Tahun</button>
+                    </div>
+                     <label for="new-duration" class="block text-sm font-medium text-gray-300 mb-1 mt-2">Atau durasi (cth: 30d, 12h, 1y)</label>
+                    <input type="text" id="new-duration" placeholder="Contoh: 7d" class="w-full rounded-md form-input">
+                </div>
+                 <div>
+                    <label for="new-role" class="block text-sm font-medium text-gray-300 mb-1">Role</label>
+                    <select id="new-role" class="w-full rounded-md role-select">
+                        <option value="Free">Free</option>
+                        <option value="Normal" selected>Normal</option>
+                        <option value="VIP">VIP</option>
+                        <option value="Developer">Developer</option>
+                    </select>
+                </div>
+            </div>
+            <button id="add-button" class="w-full mt-4 py-2 px-4 rounded-md font-semibold text-white btn btn-primary">
+                Tambahkan Kunci
+            </button>
+        </div>
+
+        <!-- Tombol Simpan Utama -->
+        <div class="mt-6">
+            <button id="save-button" class="w-full py-3 px-4 rounded-md font-semibold text-white text-lg btn btn-primary">
+                Simpan Semua Perubahan ke GitHub
+            </button>
+            <div id="status" class="mt-4 text-center text-sm min-h-[20px]"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // Konfigurasi
+        const GITHUB_USER = 'AREXANS';
+        const GITHUB_REPO = 'cupapi';
+        const GITHUB_TOKEN = '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';
+        const FILE_PATH = 'keksoeldlkdkd.json';
+
+        // DOM Elements
+        const passwordListBody = document.getElementById('password-list');
+        const fetchButton = document.getElementById('fetchButton');
+        const saveButton = document.getElementById('save-button');
+        const addButton = document.getElementById('add-button');
+        const newPasswordInput = document.getElementById('new-password');
+        const newExpirationInput = document.getElementById('new-expiration');
+        const newDurationInput = document.getElementById('new-duration');
+        const newRoleSelect = document.getElementById('new-role');
+        const statusDiv = document.getElementById('status');
+        const loader = document.getElementById('loader');
+        
+        document.getElementById('repoInfo').textContent = `${GITHUB_USER}/${GITHUB_REPO}`;
+        let fileSha = null;
+        let localPasswords = [];
+
+        // --- Utility Functions ---
+        function showStatus(message, isError = false) {
+            statusDiv.textContent = message;
+            statusDiv.className = `mt-4 text-center text-sm min-h-[20px] ${isError ? 'text-red-400' : 'text-green-400'}`;
+        }
+        
+        function indicateUnsavedChanges() {
+            saveButton.classList.remove('btn-primary');
+            saveButton.classList.add('btn-pending');
+            saveButton.textContent = 'Simpan Perubahan Tertunda ke GitHub';
+        }
+
+        function resetSaveButtonState() {
+            saveButton.classList.add('btn-primary');
+            saveButton.classList.remove('btn-pending');
+            saveButton.textContent = 'Simpan Semua Perubahan ke GitHub';
+        }
+
+        function isoToLocalInput(isoString) {
+            if (!isoString) return '';
+            const date = new Date(isoString);
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            const h = String(date.getHours()).padStart(2, '0');
+            const min = String(date.getMinutes()).padStart(2, '0');
+            return `${y}-${m}-${d}T${h}:${min}`;
+        }
+
+        function parseDuration(duration) {
+            const lastChar = duration.slice(-1).toLowerCase();
+            const value = parseInt(duration.slice(0, -1), 10);
+            if (isNaN(value)) return null;
+
+            const date = new Date();
+            if (lastChar === 'd') date.setDate(date.getDate() + value);
+            else if (lastChar === 'h') date.setHours(date.getHours() + value);
+            else if (lastChar === 'w') date.setDate(date.getDate() + value * 7);
+            else if (lastChar === 'm') date.setMonth(date.getMonth() + value);
+            else if (lastChar === 'y') date.setFullYear(date.getFullYear() + value);
+            else return null;
+            return date;
+        }
+
+        // --- Core Application Logic ---
+        function renderPasswords() {
+            passwordListBody.innerHTML = '';
+            localPasswords.sort((a, b) => new Date(b.expired) - new Date(a.expired));
+            
+            const roleColors = { 'Normal': 'lightgreen', 'VIP': 'violet', 'Developer': 'deepskyblue', 'Free': 'gray' };
+
+            localPasswords.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "bg-gray-800 border-b border-gray-700";
+                tr.dataset.index = index;
+                tr.style.color = roleColors[p.role] || 'gray';
+
+                const localDate = new Date(p.expired).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 font-mono">${p.password}</td>
+                    <td class="px-6 py-4">${localDate}</td>
+                    <td class="px-6 py-4">
+                        <select class="role-select rounded-md text-sm p-2" data-original-role="${p.role}">
+                            <option value="Free" ${p.role === 'Free' ? 'selected' : ''}>Free</option>
+                            <option value="Normal" ${p.role === 'Normal' ? 'selected' : ''}>Normal</option>
+                            <option value="VIP" ${p.role === 'VIP' ? 'selected' : ''}>VIP</option>
+                            <option value="Developer" ${p.role === 'Developer' ? 'selected' : ''}>Developer</option>
+                        </select>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="edit-btn p-2 rounded-md hover:bg-blue-700 transition" title="Edit kunci ini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                        </button>
+                        <button class="delete-btn p-2 rounded-md hover:bg-red-700 transition" title="Hapus kunci ini">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </td>
+                `;
+                passwordListBody.appendChild(tr);
+            });
+        }
+
+        function handleListActions(event) {
+            const target = event.target.closest('button, select');
+            if (!target) return;
+
+            const tr = target.closest('tr');
+            const index = parseInt(tr.dataset.index, 10);
+
+            if (target.classList.contains('delete-btn')) {
+                if (confirm(`Yakin ingin menghapus kunci "${localPasswords[index].password}"?`)) {
+                    localPasswords.splice(index, 1);
+                    renderPasswords();
+                    indicateUnsavedChanges();
+                }
+            } else if (target.classList.contains('role-select') && !target.classList.contains('edit-role-select')) {
+                localPasswords[index].role = target.value;
+                renderPasswords(); // Re-render to apply color style
+                indicateUnsavedChanges();
+            } else if (target.classList.contains('edit-btn')) {
+                const p = localPasswords[index];
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <input type="text" class="w-full rounded-md form-input text-sm p-2 font-mono edit-password-input" value="${p.password}">
+                    </td>
+                    <td class="px-6 py-4">
+                        <input type="datetime-local" class="w-full rounded-md form-input text-sm p-2 edit-expiration-input" value="${isoToLocalInput(p.expired)}">
+                        <input type="text" class="w-full rounded-md form-input text-sm p-2 mt-2 edit-duration-input" placeholder="e.g., 30d, 1y">
+                    </td>
+                    <td class="px-6 py-4">
+                        <select class="role-select rounded-md text-sm p-2 edit-role-select">
+                            <option value="Free" ${p.role === 'Free' ? 'selected' : ''}>Free</option>
+                            <option value="Normal" ${p.role === 'Normal' ? 'selected' : ''}>Normal</option>
+                            <option value="VIP" ${p.role === 'VIP' ? 'selected' : ''}>VIP</option>
+                            <option value="Developer" ${p.role === 'Developer' ? 'selected' : ''}>Developer</option>
+                        </select>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="save-edit-btn p-2 rounded-md bg-green-600 hover:bg-green-700 transition" title="Simpan perubahan">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </button>
+                        <button class="cancel-edit-btn p-2 rounded-md bg-gray-600 hover:bg-gray-500 transition" title="Batal edit">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </td>
+                `;
+                tr.querySelector('.save-edit-btn').addEventListener('click', () => {
+                    const newPassword = tr.querySelector('.edit-password-input').value.trim();
+                    const newExpiration = tr.querySelector('.edit-expiration-input').value;
+                    const newRole = tr.querySelector('.edit-role-select').value;
+
+                    if (!newPassword || !newExpiration) {
+                        showStatus("Password dan tanggal kedaluwarsa tidak boleh kosong.", true);
+                        return;
+                    }
+
+                    localPasswords[index] = {
+                        password: newPassword,
+                        expired: new Date(newExpiration).toISOString(),
+                        role: newRole
+                    };
+                    renderPasswords();
+                    indicateUnsavedChanges();
+                });
+
+                tr.querySelector('.cancel-edit-btn').addEventListener('click', () => {
+                    renderPasswords(); // Cukup render ulang seluruh daftar untuk membatalkan
+                });
+
+                tr.querySelector('.edit-duration-input').addEventListener('input', (e) => {
+                    const duration = e.target.value.trim();
+                    if (!duration) return;
+                    const date = parseDuration(duration);
+                    if (date) {
+                        tr.querySelector('.edit-expiration-input').value = isoToLocalInput(date.toISOString());
+                    }
+                });
+            }
+        }
+
+        // --- API Functions ---
+        async function fetchData() {
+            showStatus("Mengambil data...");
+            resetSaveButtonState();
+            loader.hidden = false;
+            passwordListBody.innerHTML = '';
+            fetchButton.disabled = true;
+            const fetchIconDefault = document.getElementById('fetch-icon-default');
+            const fetchIconLoading = document.getElementById('fetch-icon-loading');
+            fetchIconDefault.classList.add('hidden');
+            fetchIconLoading.classList.remove('hidden');
+
+            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}?t=${new Date().getTime()}`;
+            try {
+                const response = await fetch(apiUrl, { headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' } });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Gagal mengambil file.');
+                fileSha = data.sha;
+                const content = atob(data.content);
+                localPasswords = JSON.parse(content);
+                renderPasswords();
+                showStatus(`Berhasil memuat ${localPasswords.length} kunci.`, false);
+            } catch (error) {
+                showStatus(`Error: ${error.message}.`, true);
+                fileSha = null;
+            } finally {
+                loader.hidden = true;
+                fetchButton.disabled = false;
+                fetchIconDefault.classList.remove('hidden');
+                fetchIconLoading.classList.add('hidden');
+            }
+        }
+
+        async function saveData() {
+            if (!fileSha) {
+                showStatus("Ambil data terlebih dahulu sebelum menyimpan.", true);
+                return;
+            }
+            showStatus("Menyimpan perubahan...");
+            saveButton.disabled = true;
+
+            const content = btoa(JSON.stringify(localPasswords, null, 2));
+            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' },
+                    body: JSON.stringify({ message: "Update password.json via panel", content: content, sha: fileSha })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Gagal menyimpan file.');
+                fileSha = data.content.sha;
+                showStatus("Perubahan berhasil disimpan ke GitHub!", false);
+                resetSaveButtonState();
+                await fetchData(); // Refresh data from source
+            } catch (error) {
+                showStatus(`Error saat menyimpan: ${error.message}`, true);
+            } finally {
+                saveButton.disabled = false;
+            }
+        }
+        
+        // --- Event Listeners ---
+        addButton.addEventListener('click', () => {
+            const password = newPasswordInput.value.trim();
+            const expiredValue = newExpirationInput.value;
+            if (!password || !expiredValue) {
+                showStatus("Harap isi kata sandi dan tanggal kedaluwarsa.", true);
+                return;
+            }
+            const expiredUTC = new Date(expiredValue).toISOString();
+            const role = newRoleSelect.value;
+            
+            localPasswords.push({ password, expired: expiredUTC, role });
+            renderPasswords();
+            
+            newPasswordInput.value = '';
+            newExpirationInput.value = '';
+            newDurationInput.value = '';
+            indicateUnsavedChanges();
+        });
+
+        document.querySelectorAll('.time-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const days = parseInt(button.dataset.days, 10);
+                const date = newExpirationInput.value ? new Date(newExpirationInput.value) : new Date();
+                date.setDate(date.getDate() + days);
+                newExpirationInput.value = isoToLocalInput(date.toISOString());
+            });
+        });
+        
+        newDurationInput.addEventListener('input', () => {
+            const duration = newDurationInput.value.trim();
+            if (!duration) return;
+            const date = parseDuration(duration);
+            if (date) {
+                newExpirationInput.value = isoToLocalInput(date.toISOString());
+            }
+        });
+
+        fetchButton.addEventListener('click', fetchData);
+        saveButton.addEventListener('click', saveData);
+        passwordListBody.addEventListener('change', handleListActions);
+        passwordListBody.addEventListener('click', handleListActions);
+        window.addEventListener('load', fetchData);
+    </script>
+</body>
+</html>
