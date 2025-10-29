@@ -5,6 +5,11 @@
     "role": "Developer"
   },
   {
+    "password": "KWPRIDE01",
+    "expired": "2026-07-07T16:49:00.000Z",
+    "role": "VIP"
+  },
+  {
     "password": "rocky12",
     "expired": "2025-11-20T13:34:00.000Z",
     "role": "VIP"
