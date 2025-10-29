@@ -25,6 +25,11 @@
     "role": "VIP"
   },
   {
+    "password": "adminfael@1",
+    "expired": "2025-10-30T17:41:00.000Z",
+    "role": "VIP"
+  },
+  {
     "password": "VidsyVIP1day",
     "expired": "2025-10-28T13:56:00.000Z",
     "role": "VIP"
