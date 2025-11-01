@@ -1120,6 +1120,7 @@ task.spawn(function()
     
     local GeneralListLayout = Instance.new("UIListLayout")
     GeneralListLayout.Padding = UDim.new(0, 5)
+    GeneralListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     GeneralListLayout.Parent = GeneralListFrame
 
     local GeneralSettingsLayout = Instance.new("UIListLayout", GeneralSettingsFrame)
@@ -5198,8 +5199,18 @@ task.spawn(function()
         local thumb = Instance.new("Frame", switch); thumb.Name = "Thumb"; thumb.Size = UDim2.new(0, 16, 0, 16); thumb.Position = UDim2.new(0, 2, 0.5, -8); thumb.BackgroundColor3 = Color3.fromRGB(220, 220, 220); thumb.BorderSizePixel = 0; local thumbCorner = Instance.new("UICorner", thumb); thumbCorner.CornerRadius = UDim.new(1, 0)
         local onColor, offColor = Color3.fromRGB(0, 150, 255), Color3.fromRGB(60, 60, 60); local onPosition, offPosition = UDim2.new(1, -18, 0.5, -8), UDim2.new(0, 2, 0.5, -8); local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out); local isToggled = initialState
         local function updateVisuals(isInstant) local goalPosition, goalColor = isToggled and onPosition or offPosition, isToggled and onColor or offColor; if isInstant then thumb.Position, switch.BackgroundColor3 = goalPosition, goalColor else TweenService:Create(thumb, tweenInfo, {Position = goalPosition}):Play(); TweenService:Create(switch, tweenInfo, {BackgroundColor3 = goalColor}):Play() end end
+        
+        local function setState(newState, silent)
+            if isToggled == newState then return end
+            isToggled = newState
+            updateVisuals(true) 
+            if not silent then
+                callback(isToggled)
+            end
+        end
+
         switch.MouseButton1Click:Connect(function() isToggled = not isToggled; updateVisuals(false); callback(isToggled) end); updateVisuals(true)
-        return toggleFrame, switch
+        return toggleFrame, switch, setState
     end
     
     local function createDropdown(parent, name, options, current, callback)
@@ -5692,15 +5703,8 @@ task.spawn(function()
             backButton.Visible = false
         end)
 
-        local espToggleFrames, espSetters, isMasterEnabled = {}, {}, false
-        local function MasterToggleCallback(masterState)
-            for _, frame in ipairs(espToggleFrames) do
-                frame.Visible = masterState
-            end
-            for _, setter in ipairs(espSetters) do
-                setter(masterState, true)
-            end
-        end
+        local espSetters, isMasterEnabled = {}, false
+
         local headerContainer = Instance.new("Frame")
         headerContainer.Name = "MasterHeaderContainer"
         headerContainer.Size = UDim2.new(1, 0, 0, 25)
@@ -5708,6 +5712,26 @@ task.spawn(function()
         headerContainer.BackgroundTransparency = 1
         headerContainer.LayoutOrder = 1
         headerContainer.Parent = GeneralListFrame
+
+        local espOptionsContainer = Instance.new("Frame", GeneralListFrame)
+        espOptionsContainer.Name = "EspOptionsContainer"
+        espOptionsContainer.Size = UDim2.new(1, 0, 0, 0) -- Automatic Y size
+        espOptionsContainer.AutomaticSize = Enum.AutomaticSize.Y
+        espOptionsContainer.BackgroundTransparency = 1
+        espOptionsContainer.LayoutOrder = 2 -- Right after the master toggle
+        local espOptionsLayout = Instance.new("UIListLayout", espOptionsContainer)
+        espOptionsLayout.Padding = UDim.new(0, 2)
+        espOptionsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        local espOptionsPadding = Instance.new("UIPadding", espOptionsContainer)
+        espOptionsPadding.PaddingLeft = UDim.new(0, 10) -- Indent the options
+
+        local function MasterToggleCallback(masterState)
+            espOptionsContainer.Visible = masterState
+            for _, setter in ipairs(espSetters) do
+                setter(masterState, false)
+            end
+        end
+
         local collapseButton = Instance.new("TextButton", headerContainer)
         collapseButton.Size = UDim2.new(1, 0, 1, 0)
         collapseButton.Position = UDim2.new(0, 0, 0, 0)
@@ -5757,21 +5781,17 @@ task.spawn(function()
             generalTitleLabel.Text = "Pengaturan ESP"
             backButton.Visible = true
         end)
-        local nameFrame, _, setNameState = createToggle(GeneralListFrame, "ESP Nama & Jarak", IsEspNameEnabled, ToggleESPName)
-        nameFrame.LayoutOrder = 2
-        table.insert(espToggleFrames, nameFrame)
+        local nameFrame, _, setNameState = createToggle(espOptionsContainer, "ESP Nama & Jarak", IsEspNameEnabled, ToggleESPName)
+        nameFrame.LayoutOrder = 1
         table.insert(espSetters, setNameState)
-        local healthFrame, _, setHealthState = createToggle(GeneralListFrame, "ESP Health Bar", IsEspHealthBarEnabled, ToggleESPHealthBar)
+        local healthFrame, _, setHealthState = createToggle(espOptionsContainer, "ESP Health Bar", IsEspHealthBarEnabled, ToggleESPHealthBar)
         healthFrame.LayoutOrder = 2
-        table.insert(espToggleFrames, healthFrame)
         table.insert(espSetters, setHealthState)
-        local bodyFrame, _, setBodyState = createToggle(GeneralListFrame, "ESP Tubuh", IsEspBodyEnabled, ToggleESPBody)
-        bodyFrame.LayoutOrder = 2
-        table.insert(espToggleFrames, bodyFrame)
+        local bodyFrame, _, setBodyState = createToggle(espOptionsContainer, "ESP Tubuh", IsEspBodyEnabled, ToggleESPBody)
+        bodyFrame.LayoutOrder = 3
         table.insert(espSetters, setBodyState)
-        local lineFrame, _, setLineState = createToggle(GeneralListFrame, "ESP Garis", IsEspLineEnabled, ToggleESPLine)
-        lineFrame.LayoutOrder = 2
-        table.insert(espToggleFrames, lineFrame)
+        local lineFrame, _, setLineState = createToggle(espOptionsContainer, "ESP Garis", IsEspLineEnabled, ToggleESPLine)
+        lineFrame.LayoutOrder = 4
         table.insert(espSetters, setLineState)
         MasterToggleCallback(isMasterEnabled)
         local walkSpeedBox = createTextBox(GeneralListFrame, "Kecepatan Jalan", Settings.WalkSpeed, function(v) Settings.WalkSpeed = v; if IsWalkSpeedEnabled and LocalPlayer.Character and LocalPlayer.Character.Humanoid then LocalPlayer.Character.Humanoid.WalkSpeed = v end end)
@@ -8051,6 +8071,13 @@ local RECORDING_EXPORT_FILE = RECORDING_FOLDER .. "/" .. exportName .. ".json"
     loadTeleportData()
     loadGuiPositions()
     loadFeatureStates()
+
+    -- Nonaktifkan ESP secara default saat startup, abaikan status yang disimpan
+    IsEspNameEnabled = false
+    IsEspBodyEnabled = false
+    IsEspLineEnabled = false
+    IsEspHealthBarEnabled = false
+
     loadRecordingsData() -- [[ PERUBAHAN BARU ]]
     loadFavorites() -- [[ PERUBAHAN BARU ]]
     applyInitialStates()
