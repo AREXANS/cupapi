@@ -6659,6 +6659,12 @@ task.spawn(function()
 
             local char = LocalPlayer.Character
             if not char then return end
+            
+            -- [[ PERBAIKAN: Aktifkan kembali skrip animasi default ]]
+            local animateScript = char:FindFirstChild("Animate")
+            if animateScript and animateScript.Disabled then
+                animateScript.Disabled = false
+            end
 
             local hrp = char:FindFirstChild("HumanoidRootPart")
             local humanoid = char:FindFirstChildOfClass("Humanoid")
@@ -6941,7 +6947,7 @@ task.spawn(function()
         
             local Frame = Instance.new("Frame", ScreenGui)
             Frame.Size = UDim2.new(0, 220, 0, 115) -- Dikecilkan
-            Frame.Position = UDim2.new(0.5, -110, 0.5, -57) -- Disesuaikan
+            Frame.Position = UDim2.new(1, -230, 0.5, -57) -- Pindahkan ke kanan
             Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
             Frame.BackgroundTransparency = 0.2
             local corner = Instance.new("UICorner", Frame); corner.CornerRadius = UDim.new(0, 6)
@@ -6956,6 +6962,8 @@ task.spawn(function()
             TitleLabel.Font = Enum.Font.SourceSansBold
             TitleLabel.TextSize = 11
             TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+            MakeDraggable(Frame, TitleLabel, function() return true end, nil)
         
             local isPreviewing = false
             local originalIsPlaying = isPlaying
@@ -7510,27 +7518,40 @@ local RECORDING_EXPORT_FILE = RECORDING_FOLDER .. "/" .. exportName .. ".json"
                     if not wasPaused then
                         pausedAtTime = tick() - loopStartTime
                         wasPaused = true
-                        -- Saat dijeda, matikan movers dan animasi agar pemain diam.
+                        -- [[ PERBAIKAN: Saat dijeda, berikan kontrol kembali ke pemain ]]
                         if playbackMovers.alignPos then playbackMovers.alignPos.Enabled = false end
                         if playbackMovers.alignOrient then playbackMovers.alignOrient.Enabled = false end
-                        if humanoid then 
+                        if humanoid then
+                            humanoid.PlatformStand = false
                             humanoid.AutoRotate = true
-                            -- Hentikan semua animasi yang diputar oleh rekaman
-                            for id, track in pairs(animationCache) do
-                                if track.IsPlaying then track:Stop(0.1) end
+                            humanoid.WalkSpeed = originalPlaybackWalkSpeed
+                            for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+                                if animationCache[track.Animation.AnimationId] then
+                                    track:Stop(0.1)
+                                end
+                            end
+                            if animateScript then
+                                animateScript.Disabled = false
                             end
                         end
                     end
-                    return 
+                    task.wait() -- Tunggu di dalam loop jeda
+                    return
                 end
 
                 if wasPaused then
                     loopStartTime = tick() - pausedAtTime
                     wasPaused = false
-                    -- Hidupkan kembali movers
+                    -- [[ PERBAIKAN: Ambil kembali kontrol untuk pemutaran ulang ]]
                     if playbackMovers.alignPos then playbackMovers.alignPos.Enabled = true end
                     if playbackMovers.alignOrient then playbackMovers.alignOrient.Enabled = true end
-                    if humanoid then humanoid.AutoRotate = false end
+                    if humanoid then
+                        humanoid.PlatformStand = true
+                        humanoid.AutoRotate = false
+                        if animateScript then
+                            animateScript.Disabled = true
+                        end
+                    end
                 end
         
                 local elapsedTime = tick() - loopStartTime
