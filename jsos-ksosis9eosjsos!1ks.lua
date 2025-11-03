@@ -559,6 +559,249 @@ task.spawn(function()
     local setupPlayerTab, setupGeneralTab, setupTeleportTab, setupVipTab, setupSettingsTab, setupRekamanTab
     local startRecording, stopRecording, stopActions, stopPlayback
 
+    -- [[ TEMA UI BARU ]]
+    local ThemeableElements = {}
+    local isThemeManagerActive = false
+    local currentThemeColor = Color3.fromRGB(0, 150, 255)
+    local defaultThemeColor = Color3.fromRGB(0, 150, 255)
+
+    local function updateTheme(newColor)
+        currentThemeColor = newColor
+        if not isThemeManagerActive then return end
+
+        for _, el in ipairs(ThemeableElements) do
+            if el.instance and el.instance.Parent then
+                if el.special_update then
+                    pcall(el.special_update, el.instance, newColor)
+                else
+                    pcall(function() el.instance[el.property] = newColor end)
+                end
+            end
+        end
+    end
+
+    local function restoreDefaultTheme()
+        for _, el in ipairs(ThemeableElements) do
+            if el.instance and el.instance.Parent then
+                 if el.special_update then
+                    pcall(el.special_update, el.instance, el.original)
+                else
+                    pcall(function() el.instance[el.property] = el.original end)
+                end
+            end
+        end
+    end
+    -- [[ AKHIR TEMA UI BARU ]]
+
+    -- [[ LOGIKA UNTUK TOGGLE BARU ]]
+    local IsOptimizedGameEnabled = false
+    local storedProperties = {}
+    local darkActive = false
+    local originalLighting = {}
+    local originalSky = nil
+    local originalEffects = {}
+    local partOriginals = setmetatable({}, {__mode = "k"}) -- weak keys
+    local modifiedParts = {}
+
+    local function scanAndDisableHeavyObjects()
+        storedProperties = {}
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            pcall(function()
+                if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") or obj:IsA("Smoke")
+                or obj:IsA("Fire") or obj:IsA("Explosion") or obj:IsA("Sparkles") then
+                    storedProperties[obj] = {Enabled = obj.Enabled}
+                    obj.Enabled = false
+                elseif obj:IsA("BasePart") and (obj.Name:lower():find("tree") or obj.Name:lower():find("grass")
+                    or obj.Name:lower():find("bush") or obj.Name:lower():find("aura") or obj.Name:lower():find("leaf")
+                    or obj.Name:lower():find("cloud") or obj.Name:lower():find("fog") or obj.Name:lower():find("effect")) then
+                    storedProperties[obj] = {Transparency = obj.Transparency}
+                    obj.Transparency = 1
+                    if obj:FindFirstChildOfClass("Decal") then
+                        for _, d in ipairs(obj:GetDescendants()) do
+                            if d:IsA("Decal") or d:IsA("Texture") then
+                                storedProperties[d] = {Transparency = d.Transparency}
+                                d.Transparency = 1
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        for _, eff in ipairs(Lighting:GetChildren()) do
+            pcall(function()
+                if eff:IsA("Atmosphere") or eff:IsA("BloomEffect") or eff:IsA("ColorCorrectionEffect")
+                or eff:IsA("SunRaysEffect") or eff:IsA("DepthOfFieldEffect") or eff:IsA("Sky") then
+                    storedProperties[eff] = {Parent = eff.Parent}
+                    eff.Parent = nil
+                end
+            end)
+        end
+        storedProperties["LightingProps"] = {
+            GlobalShadows = Lighting.GlobalShadows, Brightness = Lighting.Brightness, FogEnd = Lighting.FogEnd,
+            EnvironmentDiffuseScale = Lighting.EnvironmentDiffuseScale, EnvironmentSpecularScale = Lighting.EnvironmentSpecularScale
+        }
+        pcall(function()
+            Lighting.GlobalShadows = false; Lighting.Brightness = 1; Lighting.FogEnd = 1e6;
+            Lighting.EnvironmentDiffuseScale = 0; Lighting.EnvironmentSpecularScale = 0
+        end)
+        if Workspace:FindFirstChildOfClass("Terrain") then
+            local terrain = Workspace:FindFirstChildOfClass("Terrain")
+            storedProperties["Terrain"] = {
+                Decoration = terrain.Decoration, WaterReflectance = terrain.WaterReflectance, WaterTransparency = terrain.WaterTransparency,
+                WaterWaveSize = terrain.WaterWaveSize, WaterWaveSpeed = terrain.WaterWaveSpeed
+            }
+            pcall(function()
+                terrain.Decoration = false; terrain.WaterReflectance = 0; terrain.WaterTransparency = 1;
+                terrain.WaterWaveSize = 0; terrain.WaterWaveSpeed = 0
+            end)
+        end
+    end
+
+    local function restoreHeavyObjects()
+        for obj, props in pairs(storedProperties) do
+            pcall(function()
+                if typeof(obj) == "Instance" and obj.Parent then
+                    for k, v in pairs(props) do
+                        if typeof(v) == "Instance" and not obj.Parent then v.Parent = obj else obj[k] = v end
+                    end
+                elseif obj == "LightingProps" then
+                    Lighting.GlobalShadows = props.GlobalShadows; Lighting.Brightness = props.Brightness; Lighting.FogEnd = props.FogEnd;
+                    Lighting.EnvironmentDiffuseScale = props.EnvironmentDiffuseScale; Lighting.EnvironmentSpecularScale = props.EnvironmentSpecularScale
+                elseif obj == "Terrain" and Workspace:FindFirstChildOfClass("Terrain") then
+                    local terrain = Workspace:FindFirstChildOfClass("Terrain")
+                    terrain.Decoration = props.Decoration; terrain.WaterReflectance = props.WaterReflectance; terrain.WaterTransparency = props.WaterTransparency;
+                    terrain.WaterWaveSize = props.WaterWaveSize; terrain.WaterWaveSpeed = props.WaterWaveSpeed
+                end
+            end)
+        end
+        storedProperties = {}
+    end
+
+    local function saveInstanceOriginal(inst)
+        if not inst or partOriginals[inst] then return end
+        local ok, data = pcall(function()
+            local d = {}
+            if inst:IsA("BasePart") then
+                d.Color = inst.Color; d.Material = inst.Material; d.Transparency = inst.Transparency; d.Reflectance = inst.Reflectance
+                d.LocalTransparencyModifier = inst.LocalTransparencyModifier and inst.LocalTransparencyModifier or nil
+            end
+            if inst:IsA("Decal") or inst:IsA("Texture") then d.Texture = inst.Texture end
+            if inst:IsA("ParticleEmitter") then d.Enabled = inst.Enabled end
+            if inst:IsA("MeshPart") then d.MeshId = inst.MeshId; d.TextureID = inst.TextureID end
+            return d
+        end)
+        if ok then partOriginals[inst] = data end
+    end
+
+    local function applyTotallyGray(inst)
+        if not inst then return end
+        pcall(function()
+            if inst:IsA("BasePart") then
+                saveInstanceOriginal(inst); inst.Color = Color3.fromRGB(128,128,128); inst.Material = Enum.Material.SmoothPlastic;
+                inst.Transparency = 0; inst.Reflectance = 0
+            elseif inst:IsA("MeshPart") then
+                saveInstanceOriginal(inst); inst.Color = Color3.fromRGB(128,128,128); inst.Material = Enum.Material.SmoothPlastic; inst.TextureID = ""
+            elseif inst:IsA("Decal") or inst:IsA("Texture") then
+                saveInstanceOriginal(inst); inst.Texture = ""
+            elseif inst:IsA("ParticleEmitter") then
+                saveInstanceOriginal(inst); inst.Enabled = false
+            end
+            modifiedParts[inst] = true
+        end)
+    end
+
+    local function restoreInstance(inst)
+        if not inst then return end; local data = partOriginals[inst]; if not data then return end
+        pcall(function()
+            if inst:IsA("BasePart") then
+                if data.Color then inst.Color = data.Color end; if data.Material then inst.Material = data.Material end
+                if data.Transparency then inst.Transparency = data.Transparency end; if data.Reflectance then inst.Reflectance = data.Reflectance end
+            end
+            if inst:IsA("MeshPart") then
+                if data.MeshId then inst.MeshId = data.MeshId end; if data.TextureID then inst.TextureID = data.TextureID end
+            end
+            if inst:IsA("Decal") or inst:IsA("Texture") then
+                if data.Texture then inst.Texture = data.Texture end
+            end
+            if inst:IsA("ParticleEmitter") then
+                if data.Enabled ~= nil then inst.Enabled = data.Enabled end
+            end
+        end)
+        partOriginals[inst] = nil; modifiedParts[inst] = nil
+    end
+
+    local function applyDarkTotal()
+        if darkActive then return end; darkActive = true
+        pcall(function()
+            originalLighting.Ambient = Lighting.Ambient; originalLighting.OutdoorAmbient = Lighting.OutdoorAmbient
+            originalLighting.Brightness = Lighting.Brightness; originalLighting.GlobalShadows = Lighting.GlobalShadows
+            for _, eff in ipairs(Lighting:GetChildren()) do
+                if eff:IsA("Atmosphere") or eff:IsA("Sky") or eff:IsA("ColorCorrectionEffect") or eff:IsA("BloomEffect") or eff:IsA("SunRaysEffect") or eff:IsA("DepthOfFieldEffect") or eff:IsA("BlurEffect") then
+                    originalEffects[eff] = eff:Clone()
+                end
+            end
+            originalSky = Lighting:FindFirstChildOfClass("Sky"); Lighting.Ambient = Color3.fromRGB(128,128,128)
+            Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128); Lighting.Brightness = 1; Lighting.GlobalShadows = false
+            for _, eff in ipairs(Lighting:GetChildren()) do
+                if eff:IsA("ColorCorrectionEffect") then
+                    eff.Saturation = -1; eff.TintColor = Color3.fromRGB(128,128,128)
+                elseif eff:IsA("BloomEffect") then eff.Intensity = 0 elseif eff:IsA("SunRaysEffect") then eff.Intensity = 0
+                elseif eff:IsA("DepthOfFieldEffect") then eff.InFocusRadius = 10000 elseif eff:IsA("BlurEffect") then eff.Size = 0
+                elseif eff:IsA("Atmosphere") then eff.Density = 0
+                elseif eff:IsA("Sky") then
+                    pcall(function() eff.SkyboxBk = ""; eff.SkyboxDn = ""; eff.SkyboxFt = ""; eff.SkyboxLf = ""; eff.SkyboxRt = ""; eff.SkyboxUp = "" end)
+                end
+            end
+        end)
+        local Terrain = Workspace:FindFirstChildOfClass("Terrain")
+        if Terrain then
+            pcall(function()
+                originalLighting.TerrainWaterColor = Terrain.WaterColor; originalLighting.TerrainWaterTransparency = Terrain.WaterTransparency
+                Terrain.WaterColor = Color3.fromRGB(128,128,128); Terrain.WaterTransparency = 0.5
+            end)
+        end
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Decal") or obj:IsA("Texture") or obj:IsA("ParticleEmitter") then applyTotallyGray(obj)
+            elseif obj:IsA("Accessory") then local handle = obj:FindFirstChild("Handle"); if handle then applyTotallyGray(handle) end
+            end
+        end
+        for _, pl in ipairs(game:GetService("Players"):GetPlayers()) do
+            local char = pl.Character
+            if char then
+                for _, d in ipairs(char:GetDescendants()) do
+                    if d:IsA("BasePart") or d:IsA("MeshPart") or d:IsA("Decal") or d:IsA("Texture") or d:IsA("ParticleEmitter") then applyTotallyGray(d) end
+                end
+            end
+        end
+    end
+
+    local function restoreDarkTotal()
+        if not darkActive then return end; darkActive = false
+        for inst, _ in pairs(modifiedParts) do if inst and inst.Parent then pcall(function() restoreInstance(inst) end) end end
+        pcall(function()
+            if originalLighting.Ambient then Lighting.Ambient = originalLighting.Ambient end
+            if originalLighting.OutdoorAmbient then Lighting.OutdoorAmbient = originalLighting.OutdoorAmbient end
+            if originalLighting.Brightness then Lighting.Brightness = originalLighting.Brightness end
+            if originalLighting.GlobalShadows ~= nil then Lighting.GlobalShadows = originalLighting.GlobalShadows end
+            local Terrain = Workspace:FindFirstChildOfClass("Terrain")
+            if Terrain and originalLighting.TerrainWaterColor then
+                Terrain.WaterColor = originalLighting.TerrainWaterColor; Terrain.WaterTransparency = originalLighting.TerrainWaterTransparency or Terrain.WaterTransparency
+            end
+            for origEff, cloneEff in pairs(originalEffects) do
+                if origEff and origEff.Parent then
+                    pcall(function()
+                        for _, prop in ipairs({"Brightness","Intensity","Saturation","TintColor","Size","Density","InFocusRadius"}) do
+                            if cloneEff[prop] ~= nil and origEff[prop] ~= nil then origEff[prop] = cloneEff[prop] end
+                        end
+                    end)
+                end
+            end
+            originalEffects = {}
+        end)
+        partOriginals = setmetatable({}, {__mode = "k"}); modifiedParts = {}
+    end
+    -- [[ AKHIR LOGIKA UNTUK TOGGLE BARU ]]
+
     local function InitializeMainGUI(expirationTimestamp, userRole)
         currentUserRole = userRole
         -- Layanan dan Variabel Global
@@ -816,6 +1059,8 @@ task.spawn(function()
     MiniUIStroke.Thickness = 2
     MiniUIStroke.Transparency = 0.5
     MiniUIStroke.Parent = MiniToggleButton
+    table.insert(ThemeableElements, {instance = MiniToggleButton, property = "TextColor3", original = MiniToggleButton.TextColor3})
+    table.insert(ThemeableElements, {instance = MiniUIStroke, property = "Color", original = MiniUIStroke.Color})
     
     -- Tombol toggle Emote (🤡)
     local EmoteToggleButton = Instance.new("TextButton")
@@ -871,6 +1116,7 @@ task.spawn(function()
     UIStroke.Thickness = 2
     UIStroke.Transparency = 0.5
     UIStroke.Parent = MainFrame
+    table.insert(ThemeableElements, {instance = UIStroke, property = "Color", original = UIStroke.Color})
 
     -- [[ PERUBAHAN BARU: Pegangan untuk mengubah ukuran jendela utama ]]
     local MainResizeHandle = Instance.new("TextButton")
@@ -883,6 +1129,7 @@ task.spawn(function()
     MainResizeHandle.BorderSizePixel = 0
     MainResizeHandle.ZIndex = 2 -- Pastikan di atas konten lain
     MainResizeHandle.Parent = MainFrame
+    table.insert(ThemeableElements, {instance = MainResizeHandle, property = "BackgroundColor3", original = MainResizeHandle.BackgroundColor3})
     
     local TitleBar = Instance.new("TextButton")
     TitleBar.Name = "TitleBar"
@@ -910,6 +1157,7 @@ task.spawn(function()
     TitleLabel.Text = "Arexans Tools"
     TitleLabel.TextColor3 = Color3.fromRGB(0, 170, 255)
     TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
+    table.insert(ThemeableElements, {instance = TitleLabel, property = "TextColor3", original = TitleLabel.TextColor3})
 
     local RoleLabel = Instance.new("TextButton")
     RoleLabel.Name = "RoleLabel"
@@ -923,12 +1171,16 @@ task.spawn(function()
     RoleLabel.Position = UDim2.new(0, 5, 0, 0)
     RoleLabel.Parent = TitleBar
     RoleLabel.AutoButtonColor = false
+    if currentUserRole == "Developer" then
+        table.insert(ThemeableElements, {instance = RoleLabel, property = "TextColor3", original = RoleLabel.TextColor3})
+    end
 
     local InfoButton = Instance.new("TextButton")
     InfoButton.Name = "InfoButton"
     InfoButton.Size = UDim2.new(0, 20, 0, 20)
     InfoButton.Position = UDim2.new(1, -25, 0.5, -10)
     InfoButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    table.insert(ThemeableElements, {instance = InfoButton, property = "BackgroundColor3", original = InfoButton.BackgroundColor3})
     InfoButton.Text = "i"
     InfoButton.Font = Enum.Font.SourceSansBold
     InfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -972,6 +1224,7 @@ task.spawn(function()
     TabsFrame.ScrollingDirection = Enum.ScrollingDirection.Y
     TabsFrame.ScrollBarThickness = 0
     TabsFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    table.insert(ThemeableElements, {instance = TabsFrame, property = "ScrollBarImageColor3", original = TabsFrame.ScrollBarImageColor3})
     
     local TabListLayout = Instance.new("UIListLayout")
     TabListLayout.Name = "TabListLayout"
@@ -1015,6 +1268,7 @@ task.spawn(function()
     PlayerListContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     PlayerListContainer.ScrollBarThickness = 4
     PlayerListContainer.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    table.insert(ThemeableElements, {instance = PlayerListContainer, property = "ScrollBarImageColor3", original = PlayerListContainer.ScrollBarImageColor3})
     PlayerListContainer.ElasticBehavior = Enum.ElasticBehavior.Never
     PlayerListContainer.VerticalScrollBarInset = Enum.ScrollBarInset.Always
     PlayerListContainer.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -1045,6 +1299,7 @@ task.spawn(function()
     VipTabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
     VipTabContent.ScrollBarThickness = 4
     VipTabContent.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    table.insert(ThemeableElements, {instance = VipTabContent, property = "ScrollBarImageColor3", original = VipTabContent.ScrollBarImageColor3})
     VipTabContent.ElasticBehavior = Enum.ElasticBehavior.Never
     VipTabContent.VerticalScrollBarInset = Enum.ScrollBarInset.Always
     VipTabContent.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -1058,6 +1313,7 @@ task.spawn(function()
     GeneralListFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     GeneralListFrame.ScrollBarThickness = 4
     GeneralListFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    table.insert(ThemeableElements, {instance = GeneralListFrame, property = "ScrollBarImageColor3", original = GeneralListFrame.ScrollBarImageColor3})
     GeneralListFrame.ElasticBehavior = Enum.ElasticBehavior.Never
     GeneralListFrame.VerticalScrollBarInset = Enum.ScrollBarInset.Always
     GeneralListFrame.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -1072,6 +1328,7 @@ task.spawn(function()
     GeneralSettingsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     GeneralSettingsFrame.ScrollBarThickness = 4
     GeneralSettingsFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    table.insert(ThemeableElements, {instance = GeneralSettingsFrame, property = "ScrollBarImageColor3", original = GeneralSettingsFrame.ScrollBarImageColor3})
     GeneralSettingsFrame.ElasticBehavior = Enum.ElasticBehavior.Never
     GeneralSettingsFrame.VerticalScrollBarInset = Enum.ScrollBarInset.Always
     GeneralSettingsFrame.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -1086,6 +1343,7 @@ task.spawn(function()
     SettingsTabContent.CanvasSize = UDim2.new(0, 0, 0, 0)
     SettingsTabContent.ScrollBarThickness = 4
     SettingsTabContent.ScrollBarImageColor3 = Color3.fromRGB(0, 150, 255)
+    table.insert(ThemeableElements, {instance = SettingsTabContent, property = "ScrollBarImageColor3", original = SettingsTabContent.ScrollBarImageColor3})
     SettingsTabContent.ElasticBehavior = Enum.ElasticBehavior.Never
     SettingsTabContent.VerticalScrollBarInset = Enum.ScrollBarInset.Always
     SettingsTabContent.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -1161,6 +1419,7 @@ task.spawn(function()
         local button = Instance.new("TextButton")
         button.Size = UDim2.new(1, 0, 0, 22) -- Ukuran diperkecil lagi
         button.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+        table.insert(ThemeableElements, {instance = button, property = "BackgroundColor3", original = button.BackgroundColor3})
         button.BorderSizePixel = 0
         button.Text = name
         button.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -5142,7 +5401,9 @@ task.spawn(function()
         local sliderFrame = Instance.new("Frame", parent); sliderFrame.Size = UDim2.new(1, 0, 0, 50); sliderFrame.BackgroundTransparency = 1; local titleLabel = Instance.new("TextLabel", sliderFrame); titleLabel.Size = UDim2.new(1, 0, 0, 15); titleLabel.BackgroundTransparency = 1; titleLabel.TextColor3 = Color3.fromRGB(200, 200, 200); titleLabel.TextSize = 12; titleLabel.TextXAlignment = Enum.TextXAlignment.Left; titleLabel.Text = name .. ": " .. tostring(math.floor(current * 10) / 10) .. " " .. suffix; titleLabel.Font = Enum.Font.SourceSans
         local sliderBase = Instance.new("Frame", sliderFrame); sliderBase.Name = "SliderBase"; sliderBase.Size = UDim2.new(1, 0, 0, 10); sliderBase.Position = UDim2.new(0, 0, 0, 25); sliderBase.BackgroundColor3 = Color3.fromRGB(35, 35, 35); sliderBase.BorderSizePixel = 0; local sbCorner = Instance.new("UICorner", sliderBase); sbCorner.CornerRadius = UDim.new(0, 5)
         local sliderFill = Instance.new("Frame", sliderBase); sliderFill.Name = "SliderFill"; local fillWidth = (current - min) / (max - min); sliderFill.Size = UDim2.new(fillWidth, 0, 1, 0); sliderFill.BackgroundColor3 = Color3.fromRGB(0, 150, 255); sliderFill.BorderSizePixel = 0; local sfCorner = Instance.new("UICorner", sliderFill); sfCorner.CornerRadius = UDim.new(0, 5)
+        table.insert(ThemeableElements, {instance = sliderFill, property = "BackgroundColor3", original = sliderFill.BackgroundColor3})
         local sliderThumb = Instance.new("Frame", sliderBase); sliderThumb.Name = "SliderThumb"; sliderThumb.Size = UDim2.new(0, 15, 0, 25); sliderThumb.Position = UDim2.new(fillWidth, -7.5, 0.5, -12.5); sliderThumb.BackgroundColor3 = Color3.fromRGB(0, 200, 255); sliderThumb.BorderSizePixel = 0; local stCorner = Instance.new("UICorner", sliderThumb); stCorner.CornerRadius = UDim.new(0, 5); local stStroke = Instance.new("UIStroke", sliderThumb); stStroke.Color = Color3.fromRGB(255, 255, 255); stStroke.Thickness = 1; stStroke.Transparency = 0.8
+        table.insert(ThemeableElements, {instance = sliderThumb, property = "BackgroundColor3", original = sliderThumb.BackgroundColor3})
         local isDraggingSlider = false; local function updateSlider(input) local pos = input.Position.X - sliderBase.AbsolutePosition.X; local newWidth = math.min(math.max(pos, 0), sliderBase.AbsoluteSize.X); local newValue = min + (newWidth / sliderBase.AbsoluteSize.X) * (max - min); newValue = math.floor(newValue / increment) * increment; local newFillWidth = (newValue - min) / (max - min); sliderFill.Size = UDim2.new(newFillWidth, 0, 1, 0); sliderThumb.Position = UDim2.new(newFillWidth, -7.5, 0.5, -12.5); titleLabel.Text = name .. ": " .. tostring(math.floor(newValue * 10) / 10) .. " " .. suffix; callback(newValue) end
         sliderBase.InputBegan:Connect(function(input, processed) if processed then return end; if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDraggingSlider = true; updateSlider(input) end end)
         sliderBase.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDraggingSlider = false; saveFeatureStates() end end)
@@ -5198,6 +5459,19 @@ task.spawn(function()
         local switch = Instance.new("TextButton", toggleFrame); switch.Name = "Switch"; switch.Size = UDim2.new(0, 40, 0, 20); switch.Position = UDim2.new(1, -50, 0.5, -10); switch.BackgroundColor3 = Color3.fromRGB(50, 50, 50); switch.BorderSizePixel = 0; switch.Text = ""; local switchCorner = Instance.new("UICorner", switch); switchCorner.CornerRadius = UDim.new(1, 0)
         local thumb = Instance.new("Frame", switch); thumb.Name = "Thumb"; thumb.Size = UDim2.new(0, 16, 0, 16); thumb.Position = UDim2.new(0, 2, 0.5, -8); thumb.BackgroundColor3 = Color3.fromRGB(220, 220, 220); thumb.BorderSizePixel = 0; local thumbCorner = Instance.new("UICorner", thumb); thumbCorner.CornerRadius = UDim.new(1, 0)
         local onColor, offColor = Color3.fromRGB(0, 150, 255), Color3.fromRGB(60, 60, 60); local onPosition, offPosition = UDim2.new(1, -18, 0.5, -8), UDim2.new(0, 2, 0.5, -8); local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out); local isToggled = initialState
+        
+        table.insert(ThemeableElements, {
+            instance = switch,
+            property = "BackgroundColor3",
+            original = onColor,
+            special_update = function(inst, newColor)
+                onColor = newColor
+                if isToggled then
+                    inst.BackgroundColor3 = newColor
+                end
+            end
+        })
+
         local function updateVisuals(isInstant) local goalPosition, goalColor = isToggled and onPosition or offPosition, isToggled and onColor or offColor; if isInstant then thumb.Position, switch.BackgroundColor3 = goalPosition, goalColor else TweenService:Create(thumb, tweenInfo, {Position = goalPosition}):Play(); TweenService:Create(switch, tweenInfo, {BackgroundColor3 = goalColor}):Play() end end
         
         local function setState(newState, silent)
@@ -5525,6 +5799,7 @@ task.spawn(function()
             toggleButton.Font = Enum.Font.SourceSansBold
             toggleButton.Text = "▼"
             toggleButton.TextColor3 = Color3.fromRGB(0, 170, 255)
+            table.insert(ThemeableElements, {instance = toggleButton, property = "TextColor3", original = toggleButton.TextColor3})
             toggleButton.TextSize = 20
 
             local bottomFrame = Instance.new("Frame", playerFrame); bottomFrame.Size = UDim2.new(1,0,0,22); bottomFrame.BackgroundTransparency = 1;
@@ -5912,17 +6187,96 @@ task.spawn(function()
                 MiniToggleButton.TextSize = math.floor(v * 0.6)
             end
         end).LayoutOrder = 2
-        createButton(SettingsTabContent, "Simpan Posisi UI", saveGuiPositions).LayoutOrder = 3
-        createButton(SettingsTabContent, "Hop Server", function() HopServer() end).LayoutOrder = 4
-        createToggle(SettingsTabContent, "Anti-Lag", IsAntiLagEnabled, ToggleAntiLag).LayoutOrder = 5
-        createToggle(SettingsTabContent, "Boost FPS", IsBoostFPSEnabled, ToggleBoostFPS).LayoutOrder = 6
-        createToggle(SettingsTabContent, "Shift Lock", IsShiftLockEnabled, ToggleShiftLock).LayoutOrder = 9
-        createToggle(SettingsTabContent, "Anti AFK", IsAntiAFKEnabled, ToggleAntiAFK).LayoutOrder = 10
-        createButton(SettingsTabContent, "Rejoin", Rejoin).LayoutOrder = 10
-        createButton(SettingsTabContent, "Tutup", CloseScript).LayoutOrder = 11
+
+        createToggle(SettingsTabContent, "Optimized Game", IsOptimizedGameEnabled, function(state)
+            IsOptimizedGameEnabled = state
+            if state then scanAndDisableHeavyObjects() else restoreHeavyObjects() end
+        end).LayoutOrder = 3
+
+        createToggle(SettingsTabContent, "Dark Texture", darkActive, function(state)
+            if state then applyDarkTotal() else restoreDarkTotal() end
+        end).LayoutOrder = 4
+
+        -- [[ PENGUBAH WARNA UI BARU ]]
+        local themeOptionsContainer = Instance.new("Frame", SettingsTabContent)
+        themeOptionsContainer.Name = "ThemeOptionsContainer"
+        themeOptionsContainer.Size = UDim2.new(1, 0, 0, 0)
+        themeOptionsContainer.AutomaticSize = Enum.AutomaticSize.Y
+        themeOptionsContainer.BackgroundTransparency = 1
+        themeOptionsContainer.LayoutOrder = 5 -- Disesuaikan setelah toggle baru
+        local themeOptionsLayout = Instance.new("UIListLayout", themeOptionsContainer)
+        themeOptionsLayout.Padding = UDim.new(0, 2)
+        themeOptionsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+        local isThemeOptionsVisible = false
+        local themeHeader = Instance.new("TextButton", themeOptionsContainer)
+        themeHeader.Size = UDim2.new(1, 0, 0, 25)
+        themeHeader.BackgroundTransparency = 1
+        themeHeader.Text = ""
+        themeHeader.LayoutOrder = 1
+
+        local themeTitle = Instance.new("TextLabel", themeHeader)
+        themeTitle.Size = UDim2.new(1, -25, 1, 0)
+        themeTitle.BackgroundTransparency = 1
+        themeTitle.Font = Enum.Font.SourceSans
+        themeTitle.TextSize = 12
+        themeTitle.Text = "Ganti Warna UI"
+        themeTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        themeTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+        local themeTriangle = Instance.new("TextLabel", themeHeader)
+        themeTriangle.Size = UDim2.new(0, 20, 1, 0)
+        themeTriangle.Position = UDim2.new(1, -20, 0, 0)
+        themeTriangle.BackgroundTransparency = 1
+        themeTriangle.Font = Enum.Font.SourceSansBold
+        themeTriangle.TextSize = 16
+        themeTriangle.Text = "▼"
+        themeTriangle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        themeTriangle.TextXAlignment = Enum.TextXAlignment.Right
+
+        local themeControlsFrame = Instance.new("Frame", themeOptionsContainer)
+        themeControlsFrame.Name = "ThemeControls"
+        themeControlsFrame.Size = UDim2.new(1, 0, 0, 0)
+        themeControlsFrame.AutomaticSize = Enum.AutomaticSize.Y
+        themeControlsFrame.BackgroundTransparency = 1
+        themeControlsFrame.Visible = false
+        themeControlsFrame.LayoutOrder = 2
+        local themeControlsLayout = Instance.new("UIListLayout", themeControlsFrame)
+        themeControlsLayout.Padding = UDim.new(0, 5)
+        local themeControlsPadding = Instance.new("UIPadding", themeControlsFrame)
+        themeControlsPadding.PaddingLeft = UDim.new(0, 10)
+
+        themeHeader.MouseButton1Click:Connect(function()
+            isThemeOptionsVisible = not isThemeOptionsVisible
+            themeControlsFrame.Visible = isThemeOptionsVisible
+            themeTriangle.Text = isThemeOptionsVisible and "▲" or "▼"
+        end)
+        
+        createToggle(themeControlsFrame, "Aktifkan Tema Kustom", isThemeManagerActive, function(v)
+            isThemeManagerActive = v
+            if v then
+                updateTheme(currentThemeColor)
+            else
+                restoreDefaultTheme()
+            end
+        end)
+        
+        createHSVColorPickerGroup(themeControlsFrame, "HSV Warna UI", defaultThemeColor, function(newColor)
+            updateTheme(newColor)
+        end)
+        -- [[ AKHIR PENGUBAH WARNA UI BARU ]]
+        
+        createButton(SettingsTabContent, "Simpan Posisi UI", saveGuiPositions).LayoutOrder = 6
+        createButton(SettingsTabContent, "Hop Server", function() HopServer() end).LayoutOrder = 7
+        createToggle(SettingsTabContent, "Anti-Lag", IsAntiLagEnabled, ToggleAntiLag).LayoutOrder = 8
+        createToggle(SettingsTabContent, "Boost FPS", IsBoostFPSEnabled, ToggleBoostFPS).LayoutOrder = 9
+        createToggle(SettingsTabContent, "Shift Lock", IsShiftLockEnabled, ToggleShiftLock).LayoutOrder = 10
+        createToggle(SettingsTabContent, "Anti AFK", IsAntiAFKEnabled, ToggleAntiAFK).LayoutOrder = 11
+        createButton(SettingsTabContent, "Rejoin", Rejoin).LayoutOrder = 12
+        createButton(SettingsTabContent, "Tutup", CloseScript).LayoutOrder = 13
     
         local logoutButton = createButton(SettingsTabContent, "Logout", HandleLogout)
-        logoutButton.LayoutOrder = 11
+        logoutButton.LayoutOrder = 14
         logoutButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
     end
 
@@ -5956,6 +6310,7 @@ task.spawn(function()
         local searchFrame = Instance.new("Frame", playerHeaderFrame); searchFrame.Size = UDim2.new(1, 0, 0, 25); searchFrame.Position = UDim2.new(0, 0, 0, 20); searchFrame.BackgroundTransparency = 1
         local searchTextBox = Instance.new("TextBox", searchFrame); searchTextBox.Text = ""; searchTextBox.Size = UDim2.new(0.7, -10, 1, 0); searchTextBox.Position = UDim2.new(0, 5, 0, 0); searchTextBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35); searchTextBox.TextColor3 = Color3.fromRGB(200, 200, 200); searchTextBox.PlaceholderText = "Cari Pemain..."; searchTextBox.TextSize = 12; searchTextBox.Font = Enum.Font.SourceSans; searchTextBox.ClearTextOnFocus = true; local sboxCorner = Instance.new("UICorner", searchTextBox); sboxCorner.CornerRadius = UDim.new(0, 5)
         local searchButton = Instance.new("TextButton", searchFrame); searchButton.Size = UDim2.new(0.3, 0, 1, 0); searchButton.Position = UDim2.new(0.7, 0, 0, 0); searchButton.BackgroundColor3 = Color3.fromRGB(0, 150,  255); searchButton.BorderSizePixel = 0; searchButton.Text = "Cari"; searchButton.TextColor3 = Color3.fromRGB(255, 255, 255); searchButton.TextSize = 12; searchButton.Font = Enum.Font.SourceSansBold; local sbtnCorner = Instance.new("UICorner", searchButton); sbtnCorner.CornerRadius = UDim.new(0, 5)
+        table.insert(ThemeableElements, {instance = searchButton, property = "BackgroundColor3", original = searchButton.BackgroundColor3})
         
         local PlayerSettingsFrame = Instance.new("ScrollingFrame", PlayerTabContent)
         PlayerSettingsFrame.Name = "PlayerSettingsFrame"
@@ -6080,6 +6435,7 @@ task.spawn(function()
             toggleButton.Font = Enum.Font.SourceSansBold
             toggleButton.Text = "▼"
             toggleButton.TextColor3 = Color3.fromRGB(0, 170, 255)
+            table.insert(ThemeableElements, {instance = toggleButton, property = "TextColor3", original = toggleButton.TextColor3})
             toggleButton.TextSize = 20
 
             local bottomFrame = Instance.new("Frame", playerFrame); bottomFrame.Size = UDim2.new(1,0,0,22); bottomFrame.BackgroundTransparency = 1;
@@ -8390,150 +8746,6 @@ local RECORDING_EXPORT_FILE = RECORDING_FOLDER .. "/" .. exportName .. ".json"
 end)
 
 -- =========================================================
--- ====== FITUR BARU: OPTIMIZED GAME ======
--- =========================================================
-task.defer(function()
-    local Lighting = game:GetService("Lighting")
-    local Workspace = game:GetService("Workspace")
-    local RunService = game:GetService("RunService")
-    local CoreGui = game:GetService("CoreGui")
-    local TweenService = game:GetService("TweenService")
-
-    local IsOptimizedGameEnabled = false
-    local storedProperties = {}
-
-    local function scanAndDisableHeavyObjects()
-        storedProperties = {}
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            pcall(function()
-                if obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") or obj:IsA("Smoke")
-                or obj:IsA("Fire") or obj:IsA("Explosion") or obj:IsA("Sparkles") then
-                    storedProperties[obj] = {Enabled = obj.Enabled}
-                    obj.Enabled = false
-                elseif obj:IsA("BasePart") and (obj.Name:lower():find("tree") or obj.Name:lower():find("grass")
-                    or obj.Name:lower():find("bush") or obj.Name:lower():find("aura") or obj.Name:lower():find("leaf")
-                    or obj.Name:lower():find("cloud") or obj.Name:lower():find("fog") or obj.Name:lower():find("effect")) then
-                    storedProperties[obj] = {Transparency = obj.Transparency}
-                    obj.Transparency = 1
-                    if obj:FindFirstChildOfClass("Decal") then
-                        for _, d in ipairs(obj:GetDescendants()) do
-                            if d:IsA("Decal") or d:IsA("Texture") then
-                                storedProperties[d] = {Transparency = d.Transparency}
-                                d.Transparency = 1
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-
-        -- Nonaktifkan efek Lighting berat
-        for _, eff in ipairs(Lighting:GetChildren()) do
-            pcall(function()
-                if eff:IsA("Atmosphere") or eff:IsA("BloomEffect") or eff:IsA("ColorCorrectionEffect")
-                or eff:IsA("SunRaysEffect") or eff:IsA("DepthOfFieldEffect") or eff:IsA("Sky") then
-                    storedProperties[eff] = {Parent = eff.Parent}
-                    eff.Parent = nil
-                end
-            end)
-        end
-
-        -- Simpan dan ubah properti ringan Lighting
-        storedProperties["LightingProps"] = {
-            GlobalShadows = Lighting.GlobalShadows,
-            Brightness = Lighting.Brightness,
-            FogEnd = Lighting.FogEnd,
-            EnvironmentDiffuseScale = Lighting.EnvironmentDiffuseScale,
-            EnvironmentSpecularScale = Lighting.EnvironmentSpecularScale
-        }
-        pcall(function()
-            Lighting.GlobalShadows = false
-            Lighting.Brightness = 1
-            Lighting.FogEnd = 1e6
-            Lighting.EnvironmentDiffuseScale = 0
-            Lighting.EnvironmentSpecularScale = 0
-        end)
-
-        -- Terrain ringan
-        if Workspace:FindFirstChildOfClass("Terrain") then
-            local terrain = Workspace:FindFirstChildOfClass("Terrain")
-            storedProperties["Terrain"] = {
-                Decoration = terrain.Decoration,
-                WaterReflectance = terrain.WaterReflectance,
-                WaterTransparency = terrain.WaterTransparency,
-                WaterWaveSize = terrain.WaterWaveSize,
-                WaterWaveSpeed = terrain.WaterWaveSpeed
-            }
-            pcall(function()
-                terrain.Decoration = false
-                terrain.WaterReflectance = 0
-                terrain.WaterTransparency = 1
-                terrain.WaterWaveSize = 0
-                terrain.WaterWaveSpeed = 0
-            end)
-        end
-    end
-
-    local function restoreHeavyObjects()
-        for obj, props in pairs(storedProperties) do
-            pcall(function()
-                if typeof(obj) == "Instance" and obj.Parent then
-                    for k, v in pairs(props) do
-                        if typeof(v) == "Instance" and not obj.Parent then
-                            v.Parent = obj
-                        else
-                            obj[k] = v
-                        end
-                    end
-                elseif obj == "LightingProps" then
-                    Lighting.GlobalShadows = props.GlobalShadows
-                    Lighting.Brightness = props.Brightness
-                    Lighting.FogEnd = props.FogEnd
-                    Lighting.EnvironmentDiffuseScale = props.EnvironmentDiffuseScale
-                    Lighting.EnvironmentSpecularScale = props.EnvironmentSpecularScale
-                elseif obj == "Terrain" and Workspace:FindFirstChildOfClass("Terrain") then
-                    local terrain = Workspace:FindFirstChildOfClass("Terrain")
-                    terrain.Decoration = props.Decoration
-                    terrain.WaterReflectance = props.WaterReflectance
-                    terrain.WaterTransparency = props.WaterTransparency
-                    terrain.WaterWaveSize = props.WaterWaveSize
-                    terrain.WaterWaveSpeed = props.WaterWaveSpeed
-                end
-            end)
-        end
-        storedProperties = {}
-    end
-
-    local function createToggle(parent, name, initialState, callback)
-        local toggleFrame = Instance.new("Frame", parent); toggleFrame.Size = UDim2.new(1, 0, 0, 25); toggleFrame.BackgroundTransparency = 1; local toggleLabel = Instance.new("TextLabel", toggleFrame); toggleLabel.Size = UDim2.new(0.8, -10, 1, 0); toggleLabel.Position = UDim2.new(0, 5, 0, 0); toggleLabel.BackgroundTransparency = 1; toggleLabel.Text = name; toggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255); toggleLabel.TextSize = 12; toggleLabel.TextXAlignment = Enum.TextXAlignment.Left; toggleLabel.Font = Enum.Font.SourceSans
-        local switch = Instance.new("TextButton", toggleFrame); switch.Name = "Switch"; switch.Size = UDim2.new(0, 40, 0, 20); switch.Position = UDim2.new(1, -50, 0.5, -10); switch.BackgroundColor3 = Color3.fromRGB(50, 50, 50); switch.BorderSizePixel = 0; switch.Text = ""; local switchCorner = Instance.new("UICorner", switch); switchCorner.CornerRadius = UDim.new(1, 0)
-        local thumb = Instance.new("Frame", switch); thumb.Name = "Thumb"; thumb.Size = UDim2.new(0, 16, 0, 16); thumb.Position = UDim2.new(0, 2, 0.5, -8); thumb.BackgroundColor3 = Color3.fromRGB(220, 220, 220); thumb.BorderSizePixel = 0; local thumbCorner = Instance.new("UICorner", thumb); thumbCorner.CornerRadius = UDim.new(1, 0)
-        local onColor, offColor = Color3.fromRGB(0, 150, 255), Color3.fromRGB(60, 60, 60); local onPosition, offPosition = UDim2.new(1, -18, 0.5, -8), UDim2.new(0, 2, 0.5, -8); local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out); local isToggled = initialState
-        local function updateVisuals(isInstant) local goalPosition, goalColor = isToggled and onPosition or offPosition, isToggled and onColor or offColor; if isInstant then thumb.Position, switch.BackgroundColor3 = goalPosition, goalColor else TweenService:Create(thumb, tweenInfo, {Position = goalPosition}):Play(); TweenService:Create(switch, tweenInfo, {BackgroundColor3 = goalColor}):Play() end end
-        switch.MouseButton1Click:Connect(function() isToggled = not isToggled; updateVisuals(false); callback(isToggled) end); updateVisuals(true)
-        return toggleFrame, switch
-    end
-
-    local function setupOptimizedGameToggle()
-        local mainGui = CoreGui:FindFirstChild("ArexanstoolsGUI")
-        if not mainGui then return end
-        local settingsTab = mainGui:FindFirstChild("SettingsTab", true)
-        if not settingsTab then return end
-
-        local toggleFrame, switch = createToggle(settingsTab, "Optimized Game", IsOptimizedGameEnabled, function(state)
-            IsOptimizedGameEnabled = state
-            if state then
-                scanAndDisableHeavyObjects()
-            else
-                restoreHeavyObjects()
-            end
-        end)
-        toggleFrame.LayoutOrder = 8 -- Place it after the default items
-    end
-
-    task.wait(1)
-    setupOptimizedGameToggle()
-end)
 
 -- =========================================================
 -- ========== AKHIR FITUR ANTI LAG MODE (VERSI B) ==========
@@ -8542,308 +8754,6 @@ end)
 
 
 -- =========================
--- Arexans Tools — Patch v2 (Safe template for Roblox Studio)
--- Adds:
--- 1) "Dark Texture" toggle in Settings tab placed below Boost FPS (best-effort)
--- NOTE: This script is intended as a Studio/local script template. It performs only in-game changes
--- under the authority of the place/server and is designed to be reversible and temporary.
--- =========================
-
-task.spawn(function()
-    local CoreGui = game:GetService("CoreGui")
-    local Players = game:GetService("Players")
-    local Lighting = game:GetService("Lighting")
-    local RunService = game:GetService("RunService")
-    local Workspace = game:GetService("Workspace")
-    local Terrain = Workspace:FindFirstChildOfClass("Terrain")
-    local CollectionService = game:GetService("CollectionService")
-    local TweenService = game:GetService("TweenService")
-
-    local function waitForMainGui(timeout)
-        timeout = timeout or 10
-        local elapsed = 0
-        while elapsed < timeout do
-            local gui = CoreGui:FindFirstChild("ArexanstoolsGUI")
-            if gui then return gui end
-            task.wait(0.1)
-            elapsed = elapsed + 0.1
-        end
-        return CoreGui:FindFirstChild("ArexanstoolsGUI")
-    end
-
-    local gui = waitForMainGui(10)
-    if not gui then
-        warn("[ArexansPatchV2] ArexanstoolsGUI not found; aborting patch injection.")
-        return
-    end
-
-    local settingsTab = nil
-    pcall(function()
-        settingsTab = gui.MainFrame and gui.MainFrame.ContentFrame and gui.MainFrame.ContentFrame:FindFirstChild("SettingsTab")
-    end)
-    if not settingsTab then
-        -- fallback: find by name anywhere
-        for _,v in pairs(gui:GetDescendants()) do
-            if v.Name == "SettingsTab" then settingsTab = v; break end
-        end
-    end
-    if not settingsTab then
-        warn("[ArexansPatchV2] SettingsTab not found; toggles will not be injected.")
-        return
-    end
-
-    -- Helper for creating a toggle switch
-    local function createToggle(parent, name, initialState, callback)
-        local toggleFrame = Instance.new("Frame", parent); toggleFrame.Size = UDim2.new(1, 0, 0, 25); toggleFrame.BackgroundTransparency = 1; local toggleLabel = Instance.new("TextLabel", toggleFrame); toggleLabel.Size = UDim2.new(0.8, -10, 1, 0); toggleLabel.Position = UDim2.new(0, 5, 0, 0); toggleLabel.BackgroundTransparency = 1; toggleLabel.Text = name; toggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255); toggleLabel.TextSize = 12; toggleLabel.TextXAlignment = Enum.TextXAlignment.Left; toggleLabel.Font = Enum.Font.SourceSans
-        local switch = Instance.new("TextButton", toggleFrame); switch.Name = "Switch"; switch.Size = UDim2.new(0, 40, 0, 20); switch.Position = UDim2.new(1, -50, 0.5, -10); switch.BackgroundColor3 = Color3.fromRGB(50, 50, 50); switch.BorderSizePixel = 0; switch.Text = ""; local switchCorner = Instance.new("UICorner", switch); switchCorner.CornerRadius = UDim.new(1, 0)
-        local thumb = Instance.new("Frame", switch); thumb.Name = "Thumb"; thumb.Size = UDim2.new(0, 16, 0, 16); thumb.Position = UDim2.new(0, 2, 0.5, -8); thumb.BackgroundColor3 = Color3.fromRGB(220, 220, 220); thumb.BorderSizePixel = 0; local thumbCorner = Instance.new("UICorner", thumb); thumbCorner.CornerRadius = UDim.new(1, 0)
-        local onColor, offColor = Color3.fromRGB(0, 150, 255), Color3.fromRGB(60, 60, 60); local onPosition, offPosition = UDim2.new(1, -18, 0.5, -8), UDim2.new(0, 2, 0.5, -8); local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quint, Enum.EasingDirection.Out); local isToggled = initialState
-        local function updateVisuals(isInstant) local goalPosition, goalColor = isToggled and onPosition or offPosition, isToggled and onColor or offColor; if isInstant then thumb.Position, switch.BackgroundColor3 = goalPosition, goalColor else TweenService:Create(thumb, tweenInfo, {Position = goalPosition}):Play(); TweenService:Create(switch, tweenInfo, {BackgroundColor3 = goalColor}):Play() end end
-        switch.MouseButton1Click:Connect(function() isToggled = not isToggled; updateVisuals(false); callback(isToggled) end); updateVisuals(true)
-        return toggleFrame, switch
-    end
-
-    -- Storage for originals to restore
-    local originalLighting = {}
-    local originalSky = nil
-    local originalEffects = {}
-    local partOriginals = setmetatable({}, {__mode = "k"}) -- weak keys
-    local modifiedParts = {}
-
-    -- Deep-save function for parts/instances
-    local function saveInstanceOriginal(inst)
-        if not inst or partOriginals[inst] then return end
-        local ok, data = pcall(function()
-            local d = {}
-            if inst:IsA("BasePart") then
-                d.Color = inst.Color
-                d.Material = inst.Material
-                d.Transparency = inst.Transparency
-                d.Reflectance = inst.Reflectance
-                d.LocalTransparencyModifier = inst.LocalTransparencyModifier and inst.LocalTransparencyModifier or nil
-            end
-            if inst:IsA("Decal") or inst:IsA("Texture") then
-                d.Texture = inst.Texture
-            end
-            if inst:IsA("ParticleEmitter") then
-                d.Enabled = inst.Enabled
-            end
-            if inst:IsA("MeshPart") then
-                d.MeshId = inst.MeshId
-                d.TextureID = inst.TextureID
-            end
-            return d
-        end)
-        if ok then partOriginals[inst] = data end
-    end
-
-    local function applyTotallyGray(inst)
-        if not inst then return end
-        pcall(function()
-            if inst:IsA("BasePart") then
-                saveInstanceOriginal(inst)
-                inst.Color = Color3.fromRGB(128,128,128)
-                inst.Material = Enum.Material.SmoothPlastic
-                inst.Transparency = 0
-                inst.Reflectance = 0
-            elseif inst:IsA("MeshPart") then
-                saveInstanceOriginal(inst)
-                inst.Color = Color3.fromRGB(128,128,128)
-                inst.Material = Enum.Material.SmoothPlastic
-                inst.TextureID = ""
-            elseif inst:IsA("Decal") or inst:IsA("Texture") then
-                saveInstanceOriginal(inst)
-                inst.Texture = ""
-            elseif inst:IsA("ParticleEmitter") then
-                saveInstanceOriginal(inst)
-                inst.Enabled = false
-            end
-            modifiedParts[inst] = true
-        end)
-    end
-
-    local function restoreInstance(inst)
-        if not inst then return end
-        local data = partOriginals[inst]
-        if not data then return end
-        pcall(function()
-            if inst:IsA("BasePart") then
-                if data.Color then inst.Color = data.Color end
-                if data.Material then inst.Material = data.Material end
-                if data.Transparency then inst.Transparency = data.Transparency end
-                if data.Reflectance then inst.Reflectance = data.Reflectance end
-            end
-            if inst:IsA("MeshPart") then
-                if data.MeshId then inst.MeshId = data.MeshId end
-                if data.TextureID then inst.TextureID = data.TextureID end
-            end
-            if inst:IsA("Decal") or inst:IsA("Texture") then
-                if data.Texture then inst.Texture = data.Texture end
-            end
-            if inst:IsA("ParticleEmitter") then
-                if data.Enabled ~= nil then inst.Enabled = data.Enabled end
-            end
-        end)
-        partOriginals[inst] = nil
-        modifiedParts[inst] = nil
-    end
-
-    -- Apply total gray to workspace, players, terrain, sky, and effects
-    local darkActive = false
-    local function applyDarkTotal()
-        if darkActive then return end
-        darkActive = true
-        -- Save lighting & effects
-        pcall(function()
-            originalLighting.Ambient = Lighting.Ambient
-            originalLighting.OutdoorAmbient = Lighting.OutdoorAmbient
-            originalLighting.Brightness = Lighting.Brightness
-            originalLighting.GlobalShadows = Lighting.GlobalShadows
-            -- Save post process effects
-            for _, eff in ipairs(Lighting:GetChildren()) do
-                if eff:IsA("Atmosphere") or eff:IsA("Sky") or eff:IsA("ColorCorrectionEffect") or eff:IsA("BloomEffect") or eff:IsA("SunRaysEffect") or eff:IsA("DepthOfFieldEffect") or eff:IsA("BlurEffect") then
-                    originalEffects[eff] = eff:Clone()
-                end
-            end
-            originalSky = Lighting:FindFirstChildOfClass("Sky")
-            Lighting.Ambient = Color3.fromRGB(128,128,128)
-            Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
-            Lighting.Brightness = 1
-            Lighting.GlobalShadows = false
-            -- Remove/neutralize post-processing to gray
-            for _, eff in ipairs(Lighting:GetChildren()) do
-                if eff:IsA("ColorCorrectionEffect") then
-                    eff.Saturation = -1
-                    eff.TintColor = Color3.fromRGB(128,128,128)
-                elseif eff:IsA("BloomEffect") then
-                    eff.Intensity = 0
-                elseif eff:IsA("SunRaysEffect") then
-                    eff.Intensity = 0
-                elseif eff:IsA("DepthOfFieldEffect") then
-                    eff.InFocusRadius = 10000
-                elseif eff:IsA("BlurEffect") then
-                    eff.Size = 0
-                elseif eff:IsA("Atmosphere") then
-                    eff.Density = 0
-                elseif eff:IsA("Sky") then
-                    -- optional: clear sky textures by replacing with neutral sky
-                    -- clone a simple gray sky
-                    pcall(function()
-                        eff.SkyboxBk = ""
-                        eff.SkyboxDn = ""
-                        eff.SkyboxFt = ""
-                        eff.SkyboxLf = ""
-                        eff.SkyboxRt = ""
-                        eff.SkyboxUp = ""
-                    end)
-                end
-            end
-        end)
-
-        -- Terrain adjustments (water and materials)
-        if Terrain then
-            pcall(function()
-                -- save some properties if exist
-                originalLighting.TerrainWaterColor = Terrain.WaterColor
-                originalLighting.TerrainWaterTransparency = Terrain.WaterTransparency
-                Terrain.WaterColor = Color3.fromRGB(128,128,128)
-                Terrain.WaterTransparency = 0.5
-            end)
-        end
-
-        -- Iterate all descendants and apply gray
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:IsA("BasePart") or obj:IsA("MeshPart") or obj:IsA("Decal") or obj:IsA("Texture") or obj:IsA("ParticleEmitter") then
-                applyTotallyGray(obj)
-            elseif obj:IsA("Model") then
-                -- handle model children in descendants loop
-            elseif obj:IsA("Accessory") then
-                local handle = obj:FindFirstChild("Handle")
-                if handle then applyTotallyGray(handle) end
-            end
-        end
-
-        -- Characters
-        for _, pl in ipairs(Players:GetPlayers()) do
-            local char = pl.Character
-            if char then
-                for _, d in ipairs(char:GetDescendants()) do
-                    if d:IsA("BasePart") or d:IsA("MeshPart") or d:IsA("Decal") or d:IsA("Texture") or d:IsA("ParticleEmitter") then
-                        applyTotallyGray(d)
-                    end
-                end
-            end
-        end
-    end
-
-    local function restoreDarkTotal()
-        if not darkActive then return end
-        darkActive = false
-        -- restore modified instances
-        for inst, _ in pairs(modifiedParts) do
-            if inst and inst.Parent then
-                pcall(function() restoreInstance(inst) end)
-            end
-        end
-        -- restore lighting/effects
-        pcall(function()
-            if originalLighting.Ambient then Lighting.Ambient = originalLighting.Ambient end
-            if originalLighting.OutdoorAmbient then Lighting.OutdoorAmbient = originalLighting.OutdoorAmbient end
-            if originalLighting.Brightness then Lighting.Brightness = originalLighting.Brightness end
-            if originalLighting.GlobalShadows ~= nil then Lighting.GlobalShadows = originalLighting.GlobalShadows end
-            if Terrain and originalLighting.TerrainWaterColor then
-                Terrain.WaterColor = originalLighting.TerrainWaterColor
-                Terrain.WaterTransparency = originalLighting.TerrainWaterTransparency or Terrain.WaterTransparency
-            end
-            -- restore cloned effects
-            for origEff, cloneEff in pairs(originalEffects) do
-                if origEff and origEff.Parent then
-                    -- attempt to restore properties by copying fields from clone
-                    local suc, _ = pcall(function()
-                        for _, prop in ipairs({"Brightness","Intensity","Saturation","TintColor","Size","Density","InFocusRadius"}) do
-                            if cloneEff[prop] ~= nil and origEff[prop] ~= nil then
-                                origEff[prop] = cloneEff[prop]
-                            end
-                        end
-                    end)
-                end
-            end
-            originalEffects = {}
-        end)
-        partOriginals = setmetatable({}, {__mode = "k"})
-        modifiedParts = {}
-    end
-
-    -- Find approximate position: try to place toggles below Boost FPS toggle if present
-    local function findBoostFpsLayoutOrder(parent)
-        for i, child in ipairs(parent:GetChildren()) do
-            if child:IsA("Frame") then
-                local label = child:FindFirstChildOfClass("TextLabel")
-                if label and string.lower(label.Text or ""):find("boost fps") then
-                    return child.LayoutOrder
-                end
-            end
-        end
-        return nil
-    end
-
-    -- Place Dark Texture under Boost FPS if possible
-    local darkContainer, darkSwitch = createToggle(settingsTab, "Dark Texture", false, function(state)
-        if state then applyDarkTotal() else restoreDarkTotal() end
-    end)
-
-    darkContainer.LayoutOrder = 7
-
-    -- Cleanup on GUI removal or game close
-    local function cleanup()
-        restoreDarkTotal()
-    end
-
-    settingsTab.AncestryChanged:Connect(function(_, parent)
-        if not parent then cleanup() end
-    end)
-
-end)
 
 
 
