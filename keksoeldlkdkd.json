@@ -5,6 +5,11 @@
     "role": "Developer"
   },
   {
+    "password": "FreeArexansTools",
+    "expired": "2025-12-05T01:53:00.000Z",
+    "role": "Free"
+  },
+  {
     "password": "Faizakbar123",
     "expired": "2025-12-02T18:44:00.000Z",
     "role": "VIP"
