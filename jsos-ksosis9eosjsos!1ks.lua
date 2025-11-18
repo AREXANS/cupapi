@@ -3859,9 +3859,27 @@ task.spawn(function()
     -- [[ FE INVISIBLE INTEGRATION ]]
     local function setCharacterTransparency(character, transparency)
         if not character then return end
-        for _, part in pairs(character:GetDescendants()) do
+
+        -- Daftar nama body parts default Roblox yang boleh diubah transparansinya
+        local bodyParts = {
+            "Head", "Torso", "UpperTorso", "LowerTorso",
+            "LeftUpperArm", "LeftLowerArm", "LeftHand",
+            "RightUpperArm", "RightLowerArm", "RightHand",
+            "LeftUpperLeg", "LeftLowerLeg", "LeftFoot",
+            "RightUpperLeg", "RightLowerLeg", "RightFoot",
+            "LeftArm", "RightArm", "LeftLeg", "RightLeg" -- R6 compatibility
+        }
+
+        -- Hanya ubah transparansi body parts, BUKAN accessories atau clothing
+        for _, part in pairs(character:GetChildren()) do
             if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                part.Transparency = transparency
+                -- Cek apakah part ini adalah body part asli
+                for _, bodyPartName in ipairs(bodyParts) do
+                    if part.Name == bodyPartName then
+                        part.Transparency = transparency
+                        break
+                    end
+                end
             end
         end
     end
