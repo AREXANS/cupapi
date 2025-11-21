@@ -13,5 +13,10 @@
     "password": "rocky12",
     "expired": "2025-11-20T13:34:00.000Z",
     "role": "VIP"
+  },
+  {
+    "password": "udinpetot",
+    "expired": "2025-11-23T10:42:34.218Z",
+    "role": "Normal"
   }
 ]
