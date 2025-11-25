@@ -8,5 +8,10 @@
     "password": "Faizakbar123",
     "expired": "2025-12-02T18:44:00.000Z",
     "role": "VIP"
+  },
+  {
+    "password": "FreeArexans",
+    "expired": "2025-11-28T10:39:00.000Z",
+    "role": "VIP"
   }
 ]
