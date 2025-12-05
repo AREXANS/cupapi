@@ -13,5 +13,10 @@
     "password": "Rocky12",
     "expired": "2025-12-14T19:04:00.000Z",
     "role": "VIP"
+  },
+  {
+    "password": "AXSTOOLS-0ZUX-BJM9",
+    "expired": "2025-12-06T19:05:00.000Z",
+    "role": "Free"
   }
 ]
