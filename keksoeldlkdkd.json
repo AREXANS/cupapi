@@ -8,16 +8,5 @@
     "key": "AXSTOOLS-1R6R-7TS6",
     "expired": "2026-03-15T13:35:00.000Z",
     "role": "VIP"
-  },
-  {
-    "key": "AXSTOOLS-QAWA-K8LW",
-    "package": "NORMAL",
-    "expired": "2026-01-11T06:47:07.435Z",
-    "created_at": "2026-01-10T06:47:07.436Z"
-  },
-  {
-    "key": "AREXANS",
-    "expired": "2026-01-10T14:02:00.000Z",
-    "role": "Free"
   }
 ]
