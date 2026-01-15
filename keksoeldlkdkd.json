@@ -33,5 +33,10 @@
     "key": "testing",
     "expired": "2026-01-16T14:20:17.937Z",
     "role": "VIP"
+  },
+  {
+    "key": "AXSTOOLS-HJ4U-2J8K",
+    "expired": "2026-01-22T16:55:39.702Z",
+    "role": "NORMAL"
   }
 ]
