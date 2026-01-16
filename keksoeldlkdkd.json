@@ -23,5 +23,10 @@
     "key": "AXSTOOLS-33LS-5ISZ",
     "expired": "2026-01-16T21:07:05.835Z",
     "role": "NORMAL"
+  },
+  {
+    "key": "AXSTOOLS-QZZQ-ZSY8",
+    "expired": "2026-01-18T04:24:00.000Z",
+    "role": "VIP"
   }
 ]
