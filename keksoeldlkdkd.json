@@ -76,5 +76,10 @@
     "key": "AXSTOOLS-0HWY-X165",
     "expired": "2026-01-18T11:39:39.908Z",
     "role": "NORMAL"
+  },
+  {
+    "key": "AXSTOOLS-37CD-ZSP2",
+    "expired": "2026-01-20T14:16:40.350Z",
+    "role": "VIP"
   }
 ]
