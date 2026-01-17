@@ -135,7 +135,17 @@
   {
     "key": "AXSTOOLS-37CD-ZSP2",
     "expired": "2026-01-20T14:16:40.350Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "04041ab4c6d2d475e1264bdeb7b6631aeb2325111d8dbd89569e79d8eac623f4"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "04041ab4c6d2d475e1264bdeb7b6631aeb2325111d8dbd89569e79d8eac623f4",
+        "username": "budik662",
+        "registeredAt": "2026-01-17T18:15:59.014Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-5FA5-XL8A",
