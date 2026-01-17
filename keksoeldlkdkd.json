@@ -112,7 +112,15 @@
     "expired": "2026-01-18T18:07:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "5e4ddf514bd0eaef5aac0c3867e860370858be9aaddd2ff06a1f7f4c07117435"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "5e4ddf514bd0eaef5aac0c3867e860370858be9aaddd2ff06a1f7f4c07117435",
+        "username": "pica1452",
+        "registeredAt": "2026-01-17T15:30:43.027Z"
+      }
+    ]
   }
 ]
