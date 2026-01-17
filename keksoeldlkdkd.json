@@ -80,7 +80,17 @@
   {
     "key": "AXSTOOLS-0HWY-X165",
     "expired": "2026-01-18T11:39:39.908Z",
-    "role": "NORMAL"
+    "role": "NORMAL",
+    "hwids": [
+      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
+        "username": "Dipop770",
+        "registeredAt": "2026-01-17T15:15:27.030Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-37CD-ZSP2",
