@@ -68,11 +68,6 @@
     "hwids": []
   },
   {
-    "key": "Marvil17",
-    "expired": "2026-01-17T18:50:35.244Z",
-    "role": "VIP"
-  },
-  {
     "key": "101211",
     "expired": "2026-01-18T05:30:03.265Z",
     "role": "NORMAL"
