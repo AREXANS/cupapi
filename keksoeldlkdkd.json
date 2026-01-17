@@ -35,7 +35,9 @@
   {
     "key": "AXSTOOLS-TEOT-MIQQ",
     "expired": "2026-01-18T17:59:00.000Z",
-    "role": "VIP"
+    "role": "VIP",
+    "maxHwid": 1,
+    "hwids": []
   },
   {
     "key": "Marvil17",
