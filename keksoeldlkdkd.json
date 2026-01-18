@@ -69,42 +69,6 @@
     ]
   },
   {
-    "key": "gabriel22",
-    "expired": "2026-01-18T08:53:00.000Z",
-    "role": "VIP",
-    "maxHwid": 2,
-    "hwids": [
-      "cde7ef54684af5df16cdadb4a0f460f1efc57b4dfe6d4651b03783819035317f"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "cde7ef54684af5df16cdadb4a0f460f1efc57b4dfe6d4651b03783819035317f",
-        "username": "selonuub",
-        "registeredAt": "2026-01-18T05:29:05.988Z"
-      }
-    ]
-  },
-  {
-    "key": "faisal6764",
-    "expired": "2026-01-18T09:11:34.087Z",
-    "role": "VIP"
-  },
-  {
-    "key": "AXSTOOLS-0HWY-X165",
-    "expired": "2026-01-18T11:39:39.908Z",
-    "role": "NORMAL",
-    "hwids": [
-      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
-        "username": "Dipop770",
-        "registeredAt": "2026-01-17T15:15:27.030Z"
-      }
-    ]
-  },
-  {
     "key": "AXSTOOLS-37CD-ZSP2",
     "expired": "2026-01-20T14:16:40.350Z",
     "role": "VIP",
