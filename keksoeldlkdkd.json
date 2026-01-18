@@ -176,7 +176,17 @@
   {
     "key": "AXSTOOLS-Q6WQ-RV52",
     "expired": "2026-01-19T16:49:32.629Z",
-    "role": "NORMAL"
+    "role": "NORMAL",
+    "hwids": [
+      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
+        "username": "Dipop770",
+        "registeredAt": "2026-01-18T16:51:33.930Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-Q6WQ-RV52",
