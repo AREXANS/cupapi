@@ -130,6 +130,16 @@
   {
     "key": "AXSTOOLS-DVNW-RUAN",
     "expired": "2026-01-19T22:34:12.111Z",
-    "role": "NORMAL"
+    "role": "NORMAL",
+    "hwids": [
+      "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72",
+        "username": "Dyat47",
+        "registeredAt": "2026-01-18T22:53:23.540Z"
+      }
+    ]
   }
 ]
