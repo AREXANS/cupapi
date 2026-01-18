@@ -126,5 +126,10 @@
         "registeredAt": "2026-01-17T14:41:20.677Z"
       }
     ]
+  },
+  {
+    "key": "AXSTOOLS-DVNW-RUAN",
+    "expired": "2026-01-19T22:34:12.111Z",
+    "role": "NORMAL"
   }
 ]
