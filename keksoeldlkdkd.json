@@ -94,18 +94,11 @@
   },
   {
     "key": "gabriel22",
-    "expired": "2026-01-18T06:53:53.036Z",
+    "expired": "2026-01-18T08:53:00.000Z",
     "role": "VIP",
-    "hwids": [
-      "18429405-aca3-11f0-aa41-806e6f6e6963"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "18429405-aca3-11f0-aa41-806e6f6e6963",
-        "username": "selonuub",
-        "registeredAt": "2026-01-17T15:56:21.660Z"
-      }
-    ]
+    "maxHwid": 1,
+    "hwids": [],
+    "robloxUsers": []
   },
   {
     "key": "faisal6764",
