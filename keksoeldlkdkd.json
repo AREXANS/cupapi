@@ -105,13 +105,19 @@
     "role": "VIP",
     "maxHwid": 2,
     "hwids": [
-      "8cfa21fa-f3ff-11f0-800d-806e6f6e6963"
+      "8cfa21fa-f3ff-11f0-800d-806e6f6e6963",
+      "233d738d-f550-11f0-904c-806e6f6e6963"
     ],
     "robloxUsers": [
       {
         "hwid": "8cfa21fa-f3ff-11f0-800d-806e6f6e6963",
         "username": "properkeren",
         "registeredAt": "2026-01-17T18:18:03.682Z"
+      },
+      {
+        "hwid": "233d738d-f550-11f0-904c-806e6f6e6963",
+        "username": "properkeren",
+        "registeredAt": "2026-01-18T12:03:50.362Z"
       }
     ]
   },
