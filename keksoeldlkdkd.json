@@ -53,16 +53,6 @@
     "hwids": []
   },
   {
-    "key": "101211",
-    "expired": "2026-01-18T05:30:03.265Z",
-    "role": "NORMAL"
-  },
-  {
-    "key": "101211",
-    "expired": "2026-01-18T05:30:03.528Z",
-    "role": "NORMAL"
-  },
-  {
     "key": "AXSTOOLS-KUHU-M8QP",
     "expired": "2026-02-16T06:03:15.194Z",
     "role": "VIP",
