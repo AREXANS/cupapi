@@ -82,8 +82,16 @@
     "expired": "2026-01-18T08:53:00.000Z",
     "role": "VIP",
     "maxHwid": 2,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "cde7ef54684af5df16cdadb4a0f460f1efc57b4dfe6d4651b03783819035317f"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "cde7ef54684af5df16cdadb4a0f460f1efc57b4dfe6d4651b03783819035317f",
+        "username": "selonuub",
+        "registeredAt": "2026-01-18T05:29:05.988Z"
+      }
+    ]
   },
   {
     "key": "faisal6764",
