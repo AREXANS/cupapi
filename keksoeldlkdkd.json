@@ -103,7 +103,7 @@
     "key": "1234",
     "expired": "2026-01-18T17:18:00.000Z",
     "role": "VIP",
-    "maxHwid": 1,
+    "maxHwid": 2,
     "hwids": [
       "8cfa21fa-f3ff-11f0-800d-806e6f6e6963"
     ],
