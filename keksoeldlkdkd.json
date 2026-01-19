@@ -141,5 +141,10 @@
         "registeredAt": "2026-01-17T14:41:20.677Z"
       }
     ]
+  },
+  {
+    "key": "AXSTOOLS-1R1B-ROJK",
+    "expired": "2026-01-20T05:30:07.042Z",
+    "role": "VIP"
   }
 ]
