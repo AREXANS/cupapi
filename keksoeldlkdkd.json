@@ -144,6 +144,16 @@
   {
     "key": " AXSTOOLS-QZZQ-ZSY8",
     "expired": "2026-01-22T10:22:16.003Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "24b538472ac67c07c6335e0945479a73214f3a3764ed77da45048a163e22c6dc"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "24b538472ac67c07c6335e0945479a73214f3a3764ed77da45048a163e22c6dc",
+        "username": "Pinkykitty_00",
+        "registeredAt": "2026-01-19T10:23:29.906Z"
+      }
+    ]
   }
 ]
