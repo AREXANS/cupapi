@@ -145,6 +145,16 @@
   {
     "key": "AXSTOOLS-1R1B-ROJK",
     "expired": "2026-01-20T05:30:07.042Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e",
+        "username": "RaichuChi",
+        "registeredAt": "2026-01-19T05:32:31.563Z"
+      }
+    ]
   }
 ]
