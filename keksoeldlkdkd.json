@@ -1,21 +1,5 @@
 [
   {
-    "key": "AXSTOOLS-MLKW-PR0Z",
-    "expired": "2026-01-19T05:14:00.000Z",
-    "role": "VIP",
-    "maxHwid": 1,
-    "hwids": [
-      "64388e1e312587de2d48f1dae89cccfe5184c12167c0dd74bd4105382ffeb5a7"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "64388e1e312587de2d48f1dae89cccfe5184c12167c0dd74bd4105382ffeb5a7",
-        "username": "turszsut",
-        "registeredAt": "2026-01-18T05:31:54.331Z"
-      }
-    ]
-  },
-  {
     "key": "AXSTOOLS-Q6WQ-RV52",
     "expired": "2026-01-19T16:49:32.629Z",
     "role": "NORMAL",
