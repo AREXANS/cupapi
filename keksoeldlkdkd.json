@@ -170,5 +170,10 @@
         "registeredAt": "2026-01-19T12:29:56.324Z"
       }
     ]
+  },
+  {
+    "key": "AXSTOOLS-17RD-2MEE",
+    "expired": "2026-01-20T15:29:21.593Z",
+    "role": "NORMAL"
   }
 ]
