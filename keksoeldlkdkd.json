@@ -174,6 +174,16 @@
   {
     "key": "AXSTOOLS-17RD-2MEE",
     "expired": "2026-01-20T15:29:21.593Z",
-    "role": "NORMAL"
+    "role": "NORMAL",
+    "hwids": [
+      "49f189c312fc6595e4d70efe3d7ac89e0af24b2d10f63ed34ff07874b207e126"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "49f189c312fc6595e4d70efe3d7ac89e0af24b2d10f63ed34ff07874b207e126",
+        "username": "Nickname_tutuu",
+        "registeredAt": "2026-01-19T15:49:24.764Z"
+      }
+    ]
   }
 ]
