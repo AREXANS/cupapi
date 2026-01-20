@@ -199,6 +199,16 @@
   {
     "key": "AXSTOOLS-YGUD-ST7P",
     "expired": "2026-01-21T10:00:05.516Z",
-    "role": "NORMAL"
+    "role": "NORMAL",
+    "hwids": [
+      "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72",
+        "username": "Dyat47",
+        "registeredAt": "2026-01-20T10:04:56.452Z"
+      }
+    ]
   }
 ]
