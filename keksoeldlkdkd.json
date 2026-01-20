@@ -225,5 +225,10 @@
         "registeredAt": "2026-01-20T12:44:28.568Z"
       }
     ]
+  },
+  {
+    "key": "AXSTOOLS-8BFC-39IF",
+    "expired": "2026-01-21T14:42:01.868Z",
+    "role": "NORMAL"
   }
 ]
