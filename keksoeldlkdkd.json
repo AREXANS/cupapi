@@ -1,35 +1,5 @@
 [
   {
-    "key": "123123",
-    "expired": "2026-01-20T13:20:30.122Z",
-    "role": "VIP",
-    "hwids": [
-      "ae136e1c937944411be8f74efdca98deb5fb0376da2fe8b5258609d826b76b65"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "ae136e1c937944411be8f74efdca98deb5fb0376da2fe8b5258609d826b76b65",
-        "username": "Ninoco914",
-        "registeredAt": "2026-01-18T12:26:00.059Z"
-      }
-    ]
-  },
-  {
-    "key": "AXSTOOLS-37CD-ZSP2",
-    "expired": "2026-01-20T14:16:40.350Z",
-    "role": "VIP",
-    "hwids": [
-      "04041ab4c6d2d475e1264bdeb7b6631aeb2325111d8dbd89569e79d8eac623f4"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "04041ab4c6d2d475e1264bdeb7b6631aeb2325111d8dbd89569e79d8eac623f4",
-        "username": "budik662",
-        "registeredAt": "2026-01-17T18:15:59.014Z"
-      }
-    ]
-  },
-  {
     "key": "AXSTOOLS-BG39-G2QX",
     "expired": "2026-01-23T12:48:00.000Z",
     "role": "VIP",
@@ -118,21 +88,6 @@
         "hwid": "8bafcb6be9c6c911da88e5703e021b66908c9044fd9efed2102e5f62bd91223a",
         "username": "ucuppz_1",
         "registeredAt": "2026-01-19T12:29:56.324Z"
-      }
-    ]
-  },
-  {
-    "key": "AXSTOOLS-17RD-2MEE",
-    "expired": "2026-01-20T15:29:21.593Z",
-    "role": "NORMAL",
-    "hwids": [
-      "49f189c312fc6595e4d70efe3d7ac89e0af24b2d10f63ed34ff07874b207e126"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "49f189c312fc6595e4d70efe3d7ac89e0af24b2d10f63ed34ff07874b207e126",
-        "username": "Nickname_tutuu",
-        "registeredAt": "2026-01-19T15:49:24.764Z"
       }
     ]
   },
