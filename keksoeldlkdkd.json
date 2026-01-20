@@ -214,6 +214,16 @@
   {
     "key": "Eza_2007",
     "expired": "2026-01-21T12:42:42.209Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "6ce0fc00c043cf8e033f35503a6a2c0bbc6118cdcecd703a344c552d27ccbee2"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "6ce0fc00c043cf8e033f35503a6a2c0bbc6118cdcecd703a344c552d27ccbee2",
+        "username": "iszzz_22",
+        "registeredAt": "2026-01-20T12:44:28.568Z"
+      }
+    ]
   }
 ]
