@@ -205,5 +205,10 @@
     "key": "Bang_Qin",
     "expired": "2026-01-21T05:43:30.739Z",
     "role": "VIP"
+  },
+  {
+    "key": "AXSTOOLS-M242-P8BQ",
+    "expired": "2026-01-22T06:00:22.346Z",
+    "role": "VIP"
   }
 ]
