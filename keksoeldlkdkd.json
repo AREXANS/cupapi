@@ -189,6 +189,16 @@
   {
     "key": "161528PALANDI",
     "expired": "2026-01-27T03:07:20.792Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "04e7b510a38c05ac70712ae73ce183366470b52807e71893d342be04355b69d2"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "04e7b510a38c05ac70712ae73ce183366470b52807e71893d342be04355b69d2",
+        "username": "kyyysigmaa16",
+        "registeredAt": "2026-01-20T03:09:07.657Z"
+      }
+    ]
   }
 ]
