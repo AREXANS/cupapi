@@ -229,6 +229,16 @@
   {
     "key": "AXSTOOLS-8BFC-39IF",
     "expired": "2026-01-21T14:42:01.868Z",
-    "role": "NORMAL"
+    "role": "NORMAL",
+    "hwids": [
+      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
+        "username": "Dipop770",
+        "registeredAt": "2026-01-20T14:45:23.465Z"
+      }
+    ]
   }
 ]
