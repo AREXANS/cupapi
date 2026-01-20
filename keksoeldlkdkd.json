@@ -209,6 +209,16 @@
   {
     "key": "AXSTOOLS-M242-P8BQ",
     "expired": "2026-01-22T06:00:22.346Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e",
+        "username": "RaichuChi",
+        "registeredAt": "2026-01-20T06:06:33.969Z"
+      }
+    ]
   }
 ]
