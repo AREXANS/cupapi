@@ -196,8 +196,16 @@
     "expired": "2026-03-07T18:35:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "B858F0AA67B27A59E3136AD1B858A1CF17A92D072026FA3AF4CC5543D784DBBE"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "B858F0AA67B27A59E3136AD1B858A1CF17A92D072026FA3AF4CC5543D784DBBE",
+        "username": "Waff4n_1",
+        "registeredAt": "2026-01-21T13:06:31.191Z"
+      }
+    ]
   },
   {
     "key": "axstoolsdev",
