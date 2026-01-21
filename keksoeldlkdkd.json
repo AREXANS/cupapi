@@ -124,8 +124,16 @@
     "expired": "2026-01-23T17:48:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "f5e3db6a76efd7e51437f2e254946de52c1bf7cf42cf0da06d14fa78c73ec04b"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "f5e3db6a76efd7e51437f2e254946de52c1bf7cf42cf0da06d14fa78c73ec04b",
+        "username": "leejihoon126",
+        "registeredAt": "2026-01-21T08:36:53.614Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-D51W-6FIU",
