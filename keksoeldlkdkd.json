@@ -1,20 +1,5 @@
 [
   {
-    "key": "Kenzie13",
-    "expired": "2026-01-21T09:06:55.990Z",
-    "role": "VIP",
-    "hwids": [
-      "a1d5113b-4778-11f0-9961-806e6f6e6963"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "a1d5113b-4778-11f0-9961-806e6f6e6963",
-        "username": "kingssmennz",
-        "registeredAt": "2026-01-20T09:18:07.621Z"
-      }
-    ]
-  },
-  {
     "key": "AXSTOOLS-YGUD-ST7P",
     "expired": "2026-01-21T10:00:00.000Z",
     "role": "",
@@ -44,6 +29,14 @@
         "registeredAt": "2026-01-20T12:44:28.568Z"
       }
     ]
+  },
+  {
+    "key": "Kenzie13",
+    "expired": "2026-01-21T14:06:00.000Z",
+    "role": "VIP",
+    "maxHwid": 1,
+    "hwids": [],
+    "robloxUsers": []
   },
   {
     "key": "AXSTOOLS-8BFC-39IF",
