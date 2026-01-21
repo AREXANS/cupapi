@@ -194,6 +194,16 @@
   {
     "key": "123123",
     "expired": "2026-01-23T08:37:28.261Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "ae136e1c937944411be8f74efdca98deb5fb0376da2fe8b5258609d826b76b65"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "ae136e1c937944411be8f74efdca98deb5fb0376da2fe8b5258609d826b76b65",
+        "username": "Ninoco914",
+        "registeredAt": "2026-01-21T08:39:53.238Z"
+      }
+    ]
   }
 ]
