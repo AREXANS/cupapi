@@ -68,8 +68,16 @@
     "expired": "2026-01-23T06:17:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72",
+        "username": "Dyat47",
+        "registeredAt": "2026-01-21T06:20:29.349Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-BG39-G2QX",
