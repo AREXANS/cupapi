@@ -4,8 +4,16 @@
     "expired": "2026-01-21T14:06:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "a1d5113b-4778-11f0-9961-806e6f6e6963"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "a1d5113b-4778-11f0-9961-806e6f6e6963",
+        "username": "kingssmennz",
+        "registeredAt": "2026-01-21T07:02:27.302Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-YGUD-ST7P",
