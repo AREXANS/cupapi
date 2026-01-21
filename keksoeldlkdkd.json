@@ -73,18 +73,11 @@
   },
   {
     "key": "AXSTOOLS-D51W-6FIU",
-    "expired": "2026-01-26T12:26:39.210Z",
+    "expired": "2026-01-26T17:26:00.000Z",
     "role": "VIP",
-    "hwids": [
-      "8bafcb6be9c6c911da88e5703e021b66908c9044fd9efed2102e5f62bd91223a"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "8bafcb6be9c6c911da88e5703e021b66908c9044fd9efed2102e5f62bd91223a",
-        "username": "ucuppz_1",
-        "registeredAt": "2026-01-19T12:29:56.324Z"
-      }
-    ]
+    "maxHwid": 1,
+    "hwids": [],
+    "robloxUsers": []
   },
   {
     "key": "161528PALANDI",
