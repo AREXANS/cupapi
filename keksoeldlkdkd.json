@@ -57,18 +57,11 @@
   },
   {
     "key": "AXSTOOLS-RKSI-OKZ6",
-    "expired": "2026-01-22T16:50:43.307Z",
+    "expired": "2026-01-22T21:50:00.000Z",
     "role": "VIP",
-    "hwids": [
-      "5e4ddf514bd0eaef5aac0c3867e860370858be9aaddd2ff06a1f7f4c07117435"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "5e4ddf514bd0eaef5aac0c3867e860370858be9aaddd2ff06a1f7f4c07117435",
-        "username": "Wihhdoo_0",
-        "registeredAt": "2026-01-20T16:54:00.933Z"
-      }
-    ]
+    "maxHwid": 1,
+    "hwids": [],
+    "robloxUsers": []
   },
   {
     "key": "AXSTOOLS-BG39-G2QX",
