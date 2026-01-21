@@ -60,8 +60,16 @@
     "expired": "2026-01-22T11:00:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e",
+        "username": "RaichuChi",
+        "registeredAt": "2026-01-21T07:12:24.426Z"
+      }
+    ]
   },
   {
     "key": " AXSTOOLS-QZZQ-ZSY8",
