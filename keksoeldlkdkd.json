@@ -92,8 +92,16 @@
     "expired": "2026-01-22T21:50:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "fe98d5c33894f011bdc4e016eeeb96c1775e6db3557d8b7c973a084e4abe4a26"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "fe98d5c33894f011bdc4e016eeeb96c1775e6db3557d8b7c973a084e4abe4a26",
+        "username": "Wihhdoo_0",
+        "registeredAt": "2026-01-21T13:42:49.464Z"
+      }
+    ]
   },
   {
     "key": "arexanstools2025@0YXEX52X",
