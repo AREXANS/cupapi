@@ -40,21 +40,6 @@
     "robloxUsers": []
   },
   {
-    "key": "AXSTOOLS-M242-P8BQ",
-    "expired": "2026-01-22T06:00:22.346Z",
-    "role": "VIP",
-    "hwids": [
-      "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e",
-        "username": "RaichuChi",
-        "registeredAt": "2026-01-20T06:06:33.969Z"
-      }
-    ]
-  },
-  {
     "key": " AXSTOOLS-QZZQ-ZSY8",
     "expired": "2026-01-22T10:22:16.003Z",
     "role": "VIP",
@@ -68,6 +53,14 @@
         "registeredAt": "2026-01-19T10:23:29.906Z"
       }
     ]
+  },
+  {
+    "key": "AXSTOOLS-M242-P8BQ",
+    "expired": "2026-01-22T11:00:00.000Z",
+    "role": "VIP",
+    "maxHwid": 1,
+    "hwids": [],
+    "robloxUsers": []
   },
   {
     "key": "AXSTOOLS-RKSI-OKZ6",
