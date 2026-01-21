@@ -264,6 +264,16 @@
   {
     "key": "AXSTOOLS-QS4D-W538",
     "expired": "2026-01-22T14:17:59.174Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "49f189c312fc6595e4d70efe3d7ac89e0af24b2d10f63ed34ff07874b207e126"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "49f189c312fc6595e4d70efe3d7ac89e0af24b2d10f63ed34ff07874b207e126",
+        "username": "Nickname_tutuu",
+        "registeredAt": "2026-01-21T14:20:41.140Z"
+      }
+    ]
   }
 ]
