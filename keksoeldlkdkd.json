@@ -1,181 +1,229 @@
 [
   {
-    "key": "arexanstools2025@0YXEX52X",
-    "expired": "2026-01-22T05:43:39.044+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-21T05:43:39.571295+00:00",
-    "hwids": [
-      {
-        "hwid": "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72",
-        "username": null,
-        "registered_at": "2026-01-21T05:45:41.993789+00:00"
-      }
-    ]
-  },
-  {
-    "key": "Qinnn",
-    "expired": "2026-01-23T05:24:19.334+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-21T05:24:19.914549+00:00",
-    "hwids": []
-  },
-  {
-    "key": "kurma",
-    "expired": "2026-01-21T21:32:11.617+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-21T00:04:59.480562+00:00",
-    "hwids": []
-  },
-  {
-    "key": "AXSTOOLS-QZZQ-ZSY8",
-    "expired": "2026-01-22T10:22:16.003+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
-  },
-  {
-    "key": "AXSTOOLS-D51W-6FIU",
-    "expired": "2026-01-26T12:26:39.21+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
-  },
-  {
-    "key": "161528PALANDI",
-    "expired": "2026-01-27T03:07:20.792+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
-  },
-  {
-    "key": "AXSTOOLS-M242-P8BQ",
-    "expired": "2026-01-22T06:00:22.346+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
-  },
-  {
-    "key": "AXSTOOLS-YGUD-ST7P",
-    "expired": "2026-01-21T10:00:05.516+00:00",
-    "role": "NORMAL",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
-  },
-  {
     "key": "AXSTOOLS-BG39-G2QX",
-    "expired": "2026-01-23T12:48:00+00:00",
+    "expired": "2026-01-23T12:48:00.000Z",
     "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
     "hwids": [
+      "f5e3db6a76efd7e51437f2e254946de52c1bf7cf42cf0da06d14fa78c73ec04b"
+    ],
+    "robloxUsers": [
       {
-        "hwid": "test-hwid-123",
-        "username": "TestPlayer",
-        "registered_at": "2026-01-20T20:35:36.914517+00:00"
+        "hwid": "f5e3db6a76efd7e51437f2e254946de52c1bf7cf42cf0da06d14fa78c73ec04b",
+        "username": "leejihoon126",
+        "registeredAt": "2026-01-17T14:59:36.705Z"
       }
     ]
   },
   {
-    "key": "AXSTOOLS-8BFC-39IF",
-    "expired": "2026-01-21T14:42:01.868+00:00",
-    "role": "NORMAL",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
+    "key": "AXSTOOLS-KUHU-M8QP",
+    "expired": "2026-02-16T06:03:00.000Z",
+    "role": "VIP",
+    "maxHwid": 2,
+    "hwids": [
+      "02666908-e51b-11f0-8088-806e6f6e6963"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "02666908-e51b-11f0-8088-806e6f6e6963",
+        "username": "Mozart187",
+        "registeredAt": "2026-01-17T16:20:03.651Z"
+      }
+    ]
   },
   {
-    "key": "AXSTOOLS-RKSI-OKZ6",
-    "expired": "2026-01-22T16:50:43.307+00:00",
+    "key": "AXSTOOLS-1R6R-7TS6",
+    "expired": "2026-03-07T13:35:00.000Z",
     "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
+    "hwids": [
+      "B858F0AA67B27A59E3136AD1B858A1CF17A92D072026FA3AF4CC5543D784DBBE"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "B858F0AA67B27A59E3136AD1B858A1CF17A92D072026FA3AF4CC5543D784DBBE",
+        "username": "Waff4n_1",
+        "registeredAt": "2026-01-17T17:27:52.402Z"
+      }
+    ]
   },
   {
     "key": "axstoolsdev",
-    "expired": "2099-12-31T23:59:59+00:00",
+    "expired": "+275760-09-13T00:00:00.000Z",
     "role": "Developer",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
+    "maxHwid": 1,
     "hwids": [
+      "4f670d94f0f7cd3c902bb83570a1a07f47e58897953fcc310365d336bd80ef43"
+    ],
+    "robloxUsers": [
       {
         "hwid": "4f670d94f0f7cd3c902bb83570a1a07f47e58897953fcc310365d336bd80ef43",
-        "username": null,
-        "registered_at": "2026-01-21T05:46:24.102743+00:00"
+        "username": "Arexans",
+        "registeredAt": "2026-01-17T14:41:20.677Z"
+      }
+    ]
+  },
+  {
+    "key": " AXSTOOLS-QZZQ-ZSY8",
+    "expired": "2026-01-22T10:22:16.003Z",
+    "role": "VIP",
+    "hwids": [
+      "24b538472ac67c07c6335e0945479a73214f3a3764ed77da45048a163e22c6dc"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "24b538472ac67c07c6335e0945479a73214f3a3764ed77da45048a163e22c6dc",
+        "username": "Pinkykitty_00",
+        "registeredAt": "2026-01-19T10:23:29.906Z"
+      }
+    ]
+  },
+  {
+    "key": "AXSTOOLS-D51W-6FIU",
+    "expired": "2026-01-26T12:26:39.210Z",
+    "role": "VIP",
+    "hwids": [
+      "8bafcb6be9c6c911da88e5703e021b66908c9044fd9efed2102e5f62bd91223a"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "8bafcb6be9c6c911da88e5703e021b66908c9044fd9efed2102e5f62bd91223a",
+        "username": "ucuppz_1",
+        "registeredAt": "2026-01-19T12:29:56.324Z"
+      }
+    ]
+  },
+  {
+    "key": "161528PALANDI",
+    "expired": "2026-01-27T03:07:20.792Z",
+    "role": "VIP",
+    "hwids": [
+      "04e7b510a38c05ac70712ae73ce183366470b52807e71893d342be04355b69d2"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "04e7b510a38c05ac70712ae73ce183366470b52807e71893d342be04355b69d2",
+        "username": "kyyysigmaa16",
+        "registeredAt": "2026-01-20T03:09:07.657Z"
+      }
+    ]
+  },
+  {
+    "key": "Bang_Qin",
+    "expired": "2026-01-21T05:43:30.739Z",
+    "role": "VIP",
+    "hwids": [
+      "ad902624c07cb9bfa0d9ba2176d25eb07613914ebbd48ed0c811f4c42c8ebee3"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "ad902624c07cb9bfa0d9ba2176d25eb07613914ebbd48ed0c811f4c42c8ebee3",
+        "username": "SM_Lami",
+        "registeredAt": "2026-01-20T06:07:11.911Z"
+      }
+    ]
+  },
+  {
+    "key": "AXSTOOLS-M242-P8BQ",
+    "expired": "2026-01-22T06:00:22.346Z",
+    "role": "VIP",
+    "hwids": [
+      "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "fc1bad885553aacd9c9fd2d0e4f3792d97116aae6c6daa6dd9cc9bdc5179944e",
+        "username": "RaichuChi",
+        "registeredAt": "2026-01-20T06:06:33.969Z"
       }
     ]
   },
   {
     "key": "Kenzie13",
-    "expired": "2026-01-21T09:06:55.99+00:00",
+    "expired": "2026-01-21T09:06:55.990Z",
     "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": "2026-02-20T05:41:04.888+00:00",
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
     "hwids": [
+      "a1d5113b-4778-11f0-9961-806e6f6e6963"
+    ],
+    "robloxUsers": [
       {
-        "hwid": "4f670d94f0f7cd3c902bb83570a1a07f47e58897953fcc310365d336bd80ef43",
-        "username": null,
-        "registered_at": "2026-01-21T05:44:14.114139+00:00"
+        "hwid": "a1d5113b-4778-11f0-9961-806e6f6e6963",
+        "username": "kingssmennz",
+        "registeredAt": "2026-01-20T09:18:07.621Z"
+      }
+    ]
+  },
+  {
+    "key": "AXSTOOLS-YGUD-ST7P",
+    "expired": "2026-01-21T10:00:05.516Z",
+    "role": "NORMAL",
+    "hwids": [
+      "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "1aa9e0eff5c0b5dbf417e1d8d32406e26a319d8f5306e240841f77424150ff72",
+        "username": "Dyat47",
+        "registeredAt": "2026-01-20T10:04:56.452Z"
       }
     ]
   },
   {
     "key": "Eza_2007",
-    "expired": "2026-01-21T12:42:42.209+00:00",
+    "expired": "2026-01-21T12:42:42.209Z",
     "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
+    "hwids": [
+      "6ce0fc00c043cf8e033f35503a6a2c0bbc6118cdcecd703a344c552d27ccbee2"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "6ce0fc00c043cf8e033f35503a6a2c0bbc6118cdcecd703a344c552d27ccbee2",
+        "username": "iszzz_22",
+        "registeredAt": "2026-01-20T12:44:28.568Z"
+      }
+    ]
   },
   {
-    "key": "AXSTOOLS-KUHU-M8QP",
-    "expired": "2026-02-16T06:03:00+00:00",
-    "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
+    "key": "AXSTOOLS-8BFC-39IF",
+    "expired": "2026-01-21T14:42:01.868Z",
+    "role": "NORMAL",
+    "hwids": [
+      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
+        "username": "Dipop770",
+        "registeredAt": "2026-01-20T14:45:23.465Z"
+      }
+    ]
   },
   {
-    "key": "AXSTOOLS-1R6R-7TS6",
-    "expired": "2026-03-07T13:35:00+00:00",
+    "key": "AXSTOOLS-RKSI-OKZ6",
+    "expired": "2026-01-22T16:50:43.307Z",
     "role": "VIP",
-    "max_hwid": 5,
-    "frozen_until": null,
-    "created_at": "2026-01-20T20:35:19.155778+00:00",
-    "hwids": []
+    "hwids": [
+      "5e4ddf514bd0eaef5aac0c3867e860370858be9aaddd2ff06a1f7f4c07117435"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "5e4ddf514bd0eaef5aac0c3867e860370858be9aaddd2ff06a1f7f4c07117435",
+        "username": "Wihhdoo_0",
+        "registeredAt": "2026-01-20T16:54:00.933Z"
+      }
+    ]
   },
   {
-    "key": "Qinn",
-    "expired": "2026-01-23T06:23:56.462Z",
+    "key": "kurma",
+    "expired": "2026-01-21T21:32:11.617Z",
     "role": "VIP",
-    "max_hwid": 5,
-    "transactionId": "MANUAL-1768973036463",
-    "status": "active",
-    "created_at": "2026-01-21T12:23:56.462Z",
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "5d423ede7fd33b60b988bd744e17d32262c8a89c94e056c07e2f031ee181729b"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "5d423ede7fd33b60b988bd744e17d32262c8a89c94e056c07e2f031ee181729b",
+        "username": "akuramaa_xd",
+        "registeredAt": "2026-01-20T21:34:40.459Z"
+      }
+    ]
   }
 ]
