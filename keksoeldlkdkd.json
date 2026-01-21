@@ -108,8 +108,16 @@
     "expired": "2026-01-23T08:02:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "ad902624c07cb9bfa0d9ba2176d25eb07613914ebbd48ed0c811f4c42c8ebee3"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "ad902624c07cb9bfa0d9ba2176d25eb07613914ebbd48ed0c811f4c42c8ebee3",
+        "username": "SM_Lami",
+        "registeredAt": "2026-01-21T08:06:34.459Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-BG39-G2QX",
