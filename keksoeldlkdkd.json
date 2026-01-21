@@ -28,8 +28,16 @@
     "expired": "2026-01-22T00:42:00.000Z",
     "role": "",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
+        "username": "Dipop770",
+        "registeredAt": "2026-01-21T06:23:56.991Z"
+      }
+    ]
   },
   {
     "key": "kurma",
