@@ -233,6 +233,16 @@
   {
     "key": "rivalarifin",
     "expired": "2026-01-22T12:01:42.805Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "7985f62952c264534696eb132e91c1f0cf973a16dacb589c7a7776f307db8397"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "7985f62952c264534696eb132e91c1f0cf973a16dacb589c7a7776f307db8397",
+        "username": "FinnWirr",
+        "registeredAt": "2026-01-21T12:10:39.616Z"
+      }
+    ]
   }
 ]
