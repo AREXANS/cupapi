@@ -24,24 +24,17 @@
     "robloxUsers": []
   },
   {
-    "key": "kurma",
-    "expired": "2026-01-21T21:32:11.617Z",
-    "role": "VIP",
-    "hwids": [
-      "5d423ede7fd33b60b988bd744e17d32262c8a89c94e056c07e2f031ee181729b"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "5d423ede7fd33b60b988bd744e17d32262c8a89c94e056c07e2f031ee181729b",
-        "username": "akuramaa_xd",
-        "registeredAt": "2026-01-20T21:34:40.459Z"
-      }
-    ]
-  },
-  {
     "key": "AXSTOOLS-8BFC-39IF",
     "expired": "2026-01-22T00:42:00.000Z",
     "role": "",
+    "maxHwid": 1,
+    "hwids": [],
+    "robloxUsers": []
+  },
+  {
+    "key": "kurma",
+    "expired": "2026-01-22T02:32:00.000Z",
+    "role": "VIP",
     "maxHwid": 1,
     "hwids": [],
     "robloxUsers": []
