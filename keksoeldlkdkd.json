@@ -76,8 +76,16 @@
     "expired": "2026-01-22T15:22:00.000Z",
     "role": "VIP",
     "maxHwid": 1,
-    "hwids": [],
-    "robloxUsers": []
+    "hwids": [
+      "24b538472ac67c07c6335e0945479a73214f3a3764ed77da45048a163e22c6dc"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "24b538472ac67c07c6335e0945479a73214f3a3764ed77da45048a163e22c6dc",
+        "username": "Pinkykitty_00",
+        "registeredAt": "2026-01-21T10:33:15.128Z"
+      }
+    ]
   },
   {
     "key": "AXSTOOLS-RKSI-OKZ6",
