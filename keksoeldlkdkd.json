@@ -209,13 +209,19 @@
     "role": "VIP",
     "maxHwid": 2,
     "hwids": [
-      "B858F0AA67B27A59E3136AD1B858A1CF17A92D072026FA3AF4CC5543D784DBBE"
+      "B858F0AA67B27A59E3136AD1B858A1CF17A92D072026FA3AF4CC5543D784DBBE",
+      "6373dd8b-e38a-11ef-a002-806e6f6e6963"
     ],
     "robloxUsers": [
       {
         "hwid": "B858F0AA67B27A59E3136AD1B858A1CF17A92D072026FA3AF4CC5543D784DBBE",
         "username": "Waff4n_1",
         "registeredAt": "2026-01-21T13:06:31.191Z"
+      },
+      {
+        "hwid": "6373dd8b-e38a-11ef-a002-806e6f6e6963",
+        "username": "Waff4n_1",
+        "registeredAt": "2026-01-22T12:38:30.319Z"
       }
     ]
   },
