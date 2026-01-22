@@ -240,5 +240,10 @@
         "registeredAt": "2026-01-21T06:59:04.478Z"
       }
     ]
+  },
+  {
+    "key": "AXSTOOLS-TNPI-4DHM",
+    "expired": "2026-01-23T17:19:04.065Z",
+    "role": "NORMAL"
   }
 ]
