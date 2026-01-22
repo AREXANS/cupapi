@@ -309,6 +309,16 @@
   {
     "key": "H@NSS12.",
     "expired": "2026-01-23T06:53:49.218Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "ff29810d33b0fd1292d4880d754bb53748cf0152effc94c02978da05084e7399"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "ff29810d33b0fd1292d4880d754bb53748cf0152effc94c02978da05084e7399",
+        "username": "Hansstrmaker",
+        "registeredAt": "2026-01-22T06:57:11.247Z"
+      }
+    ]
   }
 ]
