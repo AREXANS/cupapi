@@ -244,6 +244,16 @@
   {
     "key": "AXSTOOLS-TNPI-4DHM",
     "expired": "2026-01-23T17:19:04.065Z",
-    "role": "NORMAL"
+    "role": "NORMAL",
+    "hwids": [
+      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
+        "username": "Dipop770",
+        "registeredAt": "2026-01-22T17:27:56.859Z"
+      }
+    ]
   }
 ]
