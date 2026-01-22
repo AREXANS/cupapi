@@ -99,13 +99,19 @@
     "role": "",
     "maxHwid": 0,
     "hwids": [
-      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811"
+      "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
+      "4f670d94f0f7cd3c902bb83570a1a07f47e58897953fcc310365d336bd80ef43"
     ],
     "robloxUsers": [
       {
         "hwid": "7aa3ba6af0dad936bc9c50fbf9114aaee5fe1a6f9d5927b35bc19cba2b78d811",
         "username": "Dipop770",
         "registeredAt": "2026-01-22T17:27:56.859Z"
+      },
+      {
+        "hwid": "4f670d94f0f7cd3c902bb83570a1a07f47e58897953fcc310365d336bd80ef43",
+        "username": "Arexans",
+        "registeredAt": "2026-01-22T20:47:37.655Z"
       }
     ]
   },
