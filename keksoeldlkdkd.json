@@ -294,6 +294,16 @@
   {
     "key": "kenzie13",
     "expired": "2026-01-23T05:42:59.551Z",
-    "role": "VIP"
+    "role": "VIP",
+    "hwids": [
+      "a1d5113b-4778-11f0-9961-806e6f6e6963"
+    ],
+    "robloxUsers": [
+      {
+        "hwid": "a1d5113b-4778-11f0-9961-806e6f6e6963",
+        "username": "kingssmennz",
+        "registeredAt": "2026-01-22T05:48:47.792Z"
+      }
+    ]
   }
 ]
