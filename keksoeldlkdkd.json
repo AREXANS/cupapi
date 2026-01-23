@@ -1,52 +1,5 @@
 [
   {
-    "key": "Qinnn",
-    "expired": "2026-01-23T08:02:00.000Z",
-    "role": "VIP",
-    "maxHwid": 1,
-    "hwids": [
-      "ad902624c07cb9bfa0d9ba2176d25eb07613914ebbd48ed0c811f4c42c8ebee3"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "ad902624c07cb9bfa0d9ba2176d25eb07613914ebbd48ed0c811f4c42c8ebee3",
-        "username": "SM_Lami",
-        "registeredAt": "2026-01-21T08:06:34.459Z"
-      }
-    ]
-  },
-  {
-    "key": "123123",
-    "expired": "2026-01-23T08:37:28.261Z",
-    "role": "VIP",
-    "hwids": [
-      "ae136e1c937944411be8f74efdca98deb5fb0376da2fe8b5258609d826b76b65"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "ae136e1c937944411be8f74efdca98deb5fb0376da2fe8b5258609d826b76b65",
-        "username": "Ninoco914",
-        "registeredAt": "2026-01-21T08:39:53.238Z"
-      }
-    ]
-  },
-  {
-    "key": "H@NSS12.",
-    "expired": "2026-01-23T08:53:00.000Z",
-    "role": "VIP",
-    "maxHwid": 1,
-    "hwids": [
-      "ff29810d33b0fd1292d4880d754bb53748cf0152effc94c02978da05084e7399"
-    ],
-    "robloxUsers": [
-      {
-        "hwid": "ff29810d33b0fd1292d4880d754bb53748cf0152effc94c02978da05084e7399",
-        "username": "Hansstrmaker",
-        "registeredAt": "2026-01-22T06:57:11.247Z"
-      }
-    ]
-  },
-  {
     "key": "AXSTOOLS-TNPI-4DHM",
     "expired": "2026-01-23T17:19:00.000Z",
     "role": "",
