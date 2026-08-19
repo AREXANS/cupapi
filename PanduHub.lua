@@ -181,7 +181,7 @@ local function GetClosestPlayer(ignoreTeam)
     local closestDist = math.huge
     local root = GetHumanoidRootPart()
     if not root then return nil end
-    
+
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
             if ignoreTeam and player.Team and player.Team.Name == ignoreTeam then
@@ -202,9 +202,9 @@ local function GetClosestPlayer(ignoreTeam)
 end
 
 -- Load Library
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/tiooxy/Obsidian/main/Library.lua"))()
-local ThemeManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/tiooxy/Obsidian/main/addons/ThemeManager.lua"))()
-local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/tiooxy/Obsidian/main/addons/SaveManager.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/AREXANS/cupapi/refs/heads/feat/blue-glow-ui-library-9081031656700156787/Library.lua"))() -- Load Local Library
+local ThemeManager = {SetLibrary = function() end, SetFolder = function() end, BuildThemeSection = function() end, ApplyToTab = function() end}
+local SaveManager = {SetLibrary = function() end, IgnoreThemeSettings = function() end, SetIgnoreIndexes = function() end, SetFolder = function() end, BuildConfigSection = function() end, LoadAutoloadConfig = function() end}
 
 local Options = Library.Options
 
@@ -440,13 +440,13 @@ GroupEmote:AddToggle("EmoteEnabled", {
                 if humanoid and root then
                     local animId = "rbxassetid://83229063951016" -- Friday Night default
                     local soundId = "rbxassetid://85355610204255"
-                    
+
                     local anim = Instance.new("Animation")
                     anim.AnimationId = animId
                     local track = humanoid:LoadAnimation(anim)
                     track.Looped = true
                     track:Play()
-                    
+
                     local sound = Instance.new("Sound")
                     sound.SoundId = soundId
                     sound.Looped = true
@@ -1788,7 +1788,7 @@ GroupNextKiller:AddToggle("NextKillerToggle", {
             gui.Name = "NextKillerIndicator"
             gui.ResetOnSpawn = false
             gui.Parent = PlayerGui
-            
+
             local frame = Instance.new("Frame")
             frame.Size = UDim2.new(0, 300, 0, 40)
             frame.Position = UDim2.new(0.5, -150, 0.1, 0)
@@ -1796,9 +1796,9 @@ GroupNextKiller:AddToggle("NextKillerToggle", {
             frame.BackgroundTransparency = 0.3
             frame.BorderSizePixel = 0
             frame.Parent = gui
-            
+
             Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
-            
+
             local label = Instance.new("TextLabel")
             label.Size = UDim2.new(1, 0, 1, 0)
             label.BackgroundTransparency = 1
@@ -1807,7 +1807,7 @@ GroupNextKiller:AddToggle("NextKillerToggle", {
             label.TextColor3 = Color3.fromRGB(255, 255, 255)
             label.TextSize = 18
             label.Parent = frame
-            
+
             -- Update loop
             task.spawn(function()
                 while Config.NextKillerToggle do
@@ -1841,7 +1841,7 @@ GroupNextKiller:AddToggle("SpectatorToggle", {
             gui.Name = "SpectatorCounter"
             gui.ResetOnSpawn = false
             gui.Parent = PlayerGui
-            
+
             local frame = Instance.new("Frame")
             frame.Size = UDim2.new(0, 68, 0, 22)
             frame.Position = UDim2.new(0.02, 0, 0.1, 0)
@@ -1849,23 +1849,23 @@ GroupNextKiller:AddToggle("SpectatorToggle", {
             frame.BackgroundTransparency = 0.25
             frame.BorderSizePixel = 0
             frame.Parent = gui
-            
+
             Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
-            
+
             local layout = Instance.new("UIListLayout")
             layout.FillDirection = Enum.FillDirection.Horizontal
             layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
             layout.VerticalAlignment = Enum.VerticalAlignment.Center
             layout.Padding = UDim.new(0, 6)
             layout.Parent = frame
-            
+
             local icon = Instance.new("ImageLabel")
             icon.Size = UDim2.new(0, 15, 0, 15)
             icon.BackgroundTransparency = 1
             icon.Image = "rbxassetid://13321848320"
             icon.ImageColor3 = Color3.fromRGB(180, 180, 255)
             icon.Parent = frame
-            
+
             local label = Instance.new("TextLabel")
             label.Size = UDim2.new(0, 30, 0, 22)
             label.BackgroundTransparency = 1
@@ -1874,7 +1874,7 @@ GroupNextKiller:AddToggle("SpectatorToggle", {
             label.TextColor3 = Color3.fromRGB(240, 240, 240)
             label.TextSize = 13
             label.Parent = frame
-            
+
             task.spawn(function()
                 while Config.SpectatorToggle do
                     local count = 0
@@ -2157,18 +2157,18 @@ local function CreateCrosshair()
         pcall(function() obj:Destroy() end)
     end
     crosshairObjects = {}
-    
+
     if not Config.Crosshair then return end
-    
+
     local centerX = CurrentCamera.ViewportSize.X / 2 + Config.CrosshairPosX
     local centerY = CurrentCamera.ViewportSize.Y / 2 + Config.CrosshairPosY
     local size = Config.CrosshairSize
     local thickness = Config.CrosshairThickness
     local gap = Config.CrosshairGap
     local color = Config.CrosshairColor
-    
+
     local style = Config.CrosshairStyle
-    
+
     if style == "Dot" then
         local dot = Drawing.new("Circle")
         dot.Position = Vector2.new(centerX, centerY)
@@ -2188,7 +2188,7 @@ local function CreateCrosshair()
         top.Visible = true
         top.Transparency = 1
         table.insert(crosshairObjects, top)
-        
+
         -- Bottom
         local bottom = Drawing.new("Line")
         bottom.From = Vector2.new(centerX, centerY + gap)
@@ -2198,7 +2198,7 @@ local function CreateCrosshair()
         bottom.Visible = true
         bottom.Transparency = 1
         table.insert(crosshairObjects, bottom)
-        
+
         -- Left
         local left = Drawing.new("Line")
         left.From = Vector2.new(centerX - gap - size, centerY)
@@ -2208,7 +2208,7 @@ local function CreateCrosshair()
         left.Visible = true
         left.Transparency = 1
         table.insert(crosshairObjects, left)
-        
+
         -- Right
         local right = Drawing.new("Line")
         right.From = Vector2.new(centerX + gap, centerY)
@@ -2242,7 +2242,7 @@ local function CreateCrosshair()
         top.Visible = true
         top.Transparency = 1
         table.insert(crosshairObjects, top)
-        
+
         -- Bottom line
         local bottom = Drawing.new("Line")
         bottom.From = Vector2.new(centerX - gap - size, centerY + gap + size)
@@ -2252,7 +2252,7 @@ local function CreateCrosshair()
         bottom.Visible = true
         bottom.Transparency = 1
         table.insert(crosshairObjects, bottom)
-        
+
         -- Left line
         local left = Drawing.new("Line")
         left.From = Vector2.new(centerX - gap - size, centerY - gap - size)
@@ -2262,7 +2262,7 @@ local function CreateCrosshair()
         left.Visible = true
         left.Transparency = 1
         table.insert(crosshairObjects, left)
-        
+
         -- Right line
         local right = Drawing.new("Line")
         right.From = Vector2.new(centerX + gap + size, centerY - gap - size)
@@ -2278,12 +2278,12 @@ end
 -- ESP update function
 local function UpdateESP()
     if not Config.ESP_Master then return end
-    
+
     local myRoot = GetHumanoidRootPart()
     if not myRoot then return end
-    
+
     local myPos = myRoot.Position
-    
+
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
             local char = player.Character
@@ -2291,11 +2291,11 @@ local function UpdateESP()
                 local root = char:FindFirstChild("HumanoidRootPart")
                 if root then
                     local dist = (root.Position - myPos).Magnitude
-                    
+
                     -- Check if killer
                     local isKiller = player.Team and player.Team.Name == "Killer"
                     local isSCP = string.lower(char.Name):find("scp") ~= nil
-                    
+
                     -- Determine color
                     local color = Config.Color_Player
                     if isKiller and Config.ESP_Killer then
@@ -2303,7 +2303,7 @@ local function UpdateESP()
                     elseif isSCP and Config.ESP_SCP then
                         color = Config.Color_SCP
                     end
-                    
+
                     -- Create highlight if not exists
                     local highlight = char:FindFirstChild("PEH")
                     if not highlight and (Config.ESP_Player or Config.ESP_Killer or Config.ESP_SCP) then
@@ -2316,13 +2316,13 @@ local function UpdateESP()
                         highlight.Parent = char
                         table.insert(ESPObjects, highlight)
                     end
-                    
+
                     if highlight then
                         highlight.FillColor = color
                         highlight.OutlineColor = color
                         highlight.Visible = true
                     end
-                    
+
                     -- Name and distance text
                     if Config.ESP_Name or Config.ESP_Distance then
                         local textObj = char:FindFirstChild("PE_Text")
@@ -2333,14 +2333,14 @@ local function UpdateESP()
                             textObj.Adornee = root
                             textObj.AlwaysOnTop = true
                             textObj.Parent = char
-                            
+
                             local line = Instance.new("Frame")
                             line.Name = "Line"
                             line.Size = UDim2.new(1, 0, 0, 2)
                             line.BackgroundColor3 = color
                             line.BorderSizePixel = 0
                             line.Parent = textObj
-                            
+
                             local box = Instance.new("Frame")
                             box.Name = "Box"
                             box.Size = UDim2.new(1, 0, 1, 0)
@@ -2349,7 +2349,7 @@ local function UpdateESP()
                             box.BackgroundTransparency = 0.5
                             box.BorderSizePixel = 0
                             box.Parent = textObj
-                            
+
                             local label = Instance.new("TextLabel")
                             label.Name = "Text"
                             label.Size = UDim2.new(1, 0, 1, 0)
@@ -2360,7 +2360,7 @@ local function UpdateESP()
                             label.TextSize = 14
                             label.Parent = box
                         end
-                        
+
                         local label = textObj:FindFirstChild("Box"):FindFirstChild("Text")
                         if label then
                             local text = ""
@@ -2373,7 +2373,7 @@ local function UpdateESP()
                             end
                             label.Text = text
                         end
-                        
+
                         local line = textObj:FindFirstChild("Line")
                         if line then
                             line.BackgroundColor3 = color
@@ -2400,12 +2400,12 @@ RenderStepped:Connect(function()
             obj.Visible = false
         end
     end
-    
+
     -- Update ESP
     if Config.ESP_Master then
         UpdateESP()
     end
-    
+
     -- Parry circle
     if Config.ParryCircle and Config.AutoParry then
         local root = GetHumanoidRootPart()
@@ -2431,7 +2431,7 @@ RenderStepped:Connect(function()
             end
         end
     end
-    
+
     -- Flee killer
     if Config.FleeKiller and IsSurvivor() then
         local root = GetHumanoidRootPart()
@@ -2461,7 +2461,7 @@ RenderStepped:Connect(function()
             end
         end
     end
-    
+
     -- God mode
     if Config.GodMode then
         local humanoid = GetHumanoid()
@@ -2470,7 +2470,7 @@ RenderStepped:Connect(function()
             humanoid:ChangeState(Enum.HumanoidStateType.Physics)
         end
     end
-    
+
     -- No slowdown survivor
     if Config.NoSlowdownSurvivor and IsSurvivor() then
         local humanoid = GetHumanoid()
@@ -2478,7 +2478,7 @@ RenderStepped:Connect(function()
             humanoid.WalkSpeed = 16
         end
     end
-    
+
     -- No slowdown killer
     if Config.NoSlowdown and IsKiller() then
         local humanoid = GetHumanoid()
@@ -2486,7 +2486,7 @@ RenderStepped:Connect(function()
             humanoid.WalkSpeed = 16
         end
     end
-    
+
     -- Auto wiggle
     if Config.AutoWiggle and IsSurvivor() then
         local isCarried = Character and Character:FindFirstChild("IsCarried")
@@ -2503,7 +2503,7 @@ RenderStepped:Connect(function()
             end
         end
     end
-    
+
     -- Auto attack (killer)
     if Config.AutoAttack and IsKiller() then
         local root = GetHumanoidRootPart()
@@ -2543,7 +2543,7 @@ end)
 LocalPlayer.CharacterAdded:Connect(function(char)
     Character = char
     task.wait(1.2)
-    
+
     -- Reset features on respawn
     if Config.FullBright then
         Lighting.Brightness = 5
@@ -2552,7 +2552,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
         Lighting.Ambient = Color3.fromRGB(255, 255, 255)
         Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
     end
-    
+
     if Config.NoFog then
         Lighting.FogStart = 0
         Lighting.FogEnd = 100000
@@ -2562,7 +2562,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
             atmosphere.Density = 0
         end
     end
-    
+
     if Config.InfiniteLunge and IsKiller() then
         char:SetAttribute("lungeboost", 999)
     end
@@ -2575,7 +2575,7 @@ end)
 LocalPlayer:GetPropertyChangedSignal("Team"):Connect(function()
     Team = LocalPlayer.Team
     TeamName = Team and Team.Name or "Unknown"
-    
+
     if TeamName == "Survivors" and Config.AutoAFKEscape then
         Library:Notify({
             Time = 3,

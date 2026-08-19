@@ -118,11 +118,14 @@ UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
 UIListLayout.Padding = UDim.new(0, 10)
 
-function Library:Notify(options)
+function Library:Notify(options, legacyDuration)
+    if type(options) == "string" then
+        options = { Title = "Pandu Hub", Content = options, Duration = legacyDuration or 3 }
+    end
     options = options or {}
     local title = options.Title or "Notification"
-    local text = options.Content or "This is a notification."
-    local duration = options.Duration or 3
+    local text = options.Content or options.Description or options.Text or "This is a notification."
+    local duration = options.Duration or options.Time or 3
 
     local NotifFrame = Instance.new("Frame")
     NotifFrame.Name = "NotifFrame"
@@ -933,6 +936,151 @@ function Library:CreateWindow(options)
         return TabObj
     end
     return WindowObj
+end
+
+
+-- =======================================================
+
+
+-- =======================================================
+-- OBSIDIAN WRAPPER (Preserving Animations & Components)
+-- =======================================================
+Library.Options = Library.Flags
+Library.Toggles = {}
+
+-- Save the original CreateWindow
+local OriginalCreateWindow = Library.CreateWindow
+
+function Library:CreateWindow(options)
+    -- If it doesn't look like Obsidian (lacks SidebarCompacted, AutoShow, etc.), run normally
+    if options.SidebarCompacted == nil and options.AutoShow == nil then
+        return OriginalCreateWindow(self, options)
+    end
+
+    -- It's an Obsidian call. Create a native Glow Window.
+    local glowOptions = {
+        Name = options.Title or "Pandu Hub",
+        Size = UDim2.new(0, 500, 0, 350),
+        HideBind = Enum.KeyCode.RightControl
+    }
+    local NativeWindow = OriginalCreateWindow(self, glowOptions)
+
+    local ObsidianWindow = {
+        Native = NativeWindow
+    }
+
+    function ObsidianWindow:AddTab(tabName, icon)
+        local NativeTab = NativeWindow:CreateTab({ Name = tabName, Icon = icon })
+        local ObsidianTab = { Native = NativeTab }
+
+        local function GetChainable(baseObj)
+            baseObj.AddKeyPicker = function(self, id, opts) return baseObj end
+            baseObj.AddColorPicker = function(self, id, opts) return baseObj end
+            return baseObj
+        end
+
+        function ObsidianTab:AddLeftGroupbox(name)
+            NativeTab:CreateSection(name)
+            local ObsidianGroup = { Native = NativeTab }
+
+            function ObsidianGroup:AddToggle(id, opts)
+                local NativeToggle = NativeTab:CreateToggle({
+                    Name = opts.Text or "Toggle",
+                    CurrentValue = opts.Default or false,
+                    Flag = id,
+                    Callback = function(val)
+                        Library.Options[id] = val
+                        if opts.Callback then pcall(opts.Callback, val) end
+                    end
+                })
+                local retObj = {
+                    SetValue = function(self, val) NativeToggle.Set(val) end,
+                    Value = opts.Default or false
+                }
+                Library.Toggles[id] = retObj
+                return GetChainable(retObj)
+            end
+            ObsidianGroup.AddCheckbox = ObsidianGroup.AddToggle
+
+            function ObsidianGroup:AddSlider(id, opts)
+                local NativeSlider = NativeTab:CreateSlider({
+                    Name = opts.Text or "Slider",
+                    Range = {opts.Min or 0, opts.Max or 100},
+                    Increment = 1,
+                    CurrentValue = opts.Default or opts.Min or 0,
+                    Flag = id,
+                    Callback = function(val)
+                        Library.Options[id] = val
+                        if opts.Callback then pcall(opts.Callback, val) end
+                    end
+                })
+                return GetChainable({
+                    SetValue = function(self, val) NativeSlider.Set(val) end
+                })
+            end
+
+            function ObsidianGroup:AddDropdown(id, opts)
+                local NativeDropdown = NativeTab:CreateDropdown({
+                    Name = opts.Text or "Dropdown",
+                    Options = opts.Values or {},
+                    CurrentOption = opts.Default or (opts.Values and opts.Values[1]) or "",
+                    Flag = id,
+                    Callback = function(val)
+                        Library.Options[id] = val
+                        if opts.Callback then pcall(opts.Callback, val) end
+                    end
+                })
+                return GetChainable({
+                    SetValue = function(self, val) NativeDropdown.Set(val) end,
+                    SetValues = function(self, newList) NativeDropdown.Refresh(newList) end
+                })
+            end
+
+            function ObsidianGroup:AddInput(id, opts)
+                local NativeInput = NativeTab:CreateInput({
+                    Name = opts.Text or "Input",
+                    Placeholder = "Enter text...",
+                    Flag = id,
+                    Callback = function(val)
+                        Library.Options[id] = val
+                        if opts.Callback then pcall(opts.Callback, val) end
+                    end
+                })
+                -- Initialize default value if provided
+                if opts.Default then
+                    NativeInput.Set(opts.Default)
+                end
+                return GetChainable({})
+            end
+
+            function ObsidianGroup:AddButton(opts)
+                NativeTab:CreateButton({
+                    Name = opts.Text or "Button",
+                    Callback = function()
+                        if opts.Callback then pcall(opts.Callback) end
+                    end
+                })
+                return GetChainable({})
+            end
+
+            function ObsidianGroup:AddLabel(text)
+                local NativeLabel = NativeTab:CreateLabel(text)
+                return GetChainable({
+                    SetText = function(self, txt) NativeLabel:Set(txt) end
+                })
+            end
+
+            function ObsidianGroup:AddColorPicker(...) return GetChainable({}) end
+            function ObsidianGroup:AddKeyPicker(...) return GetChainable({}) end
+
+            return ObsidianGroup
+        end
+        ObsidianTab.AddRightGroupbox = ObsidianTab.AddLeftGroupbox
+
+        return ObsidianTab
+    end
+
+    return ObsidianWindow
 end
 
 return Library
