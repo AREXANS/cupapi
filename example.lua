@@ -1,19 +1,16 @@
--- Load the Library (Normally you'd use loadstring)
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_NAME/YOUR_REPO/main/Library.lua"))()
+-- Ensure you place Library.lua appropriately if not loading remotely
+local Library = require(script.Parent:WaitForChild("Library")) or loadstring(game:HttpGet("https://raw.githubusercontent.com/YOUR_NAME/YOUR_REPO/main/Library.lua"))()
 
 -- Create the Main Window
 local Window = Library:CreateWindow({
-    Title = "Blue Glow UI v1.0",
-    Size = UDim2.new(0, 600, 0, 400)
+    Name = "Blue Glow UI"
 })
 
 -- Create Tabs
-local MainTab = Window:CreateTab("Main Features")
-local SettingsTab = Window:CreateTab("Settings")
+local MainTab = Window:CreateTab({Name = "Main Features"})
+local SettingsTab = Window:CreateTab({Name = "Settings"})
 
 -- Populate Main Tab
-MainTab:CreateSection("Player Combat")
-
 MainTab:CreateButton({
     Name = "Kill All Enemies",
     Callback = function()
@@ -34,7 +31,7 @@ MainTab:CreateSlider({
     Range = {16, 100},
     CurrentValue = 16,
     Callback = function(Value)
-        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        if game.Players.LocalPlayer and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
             game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
         end
         print("WalkSpeed set to: ", Value)
@@ -51,8 +48,6 @@ MainTab:CreateDropdown({
 })
 
 -- Populate Settings Tab
-SettingsTab:CreateSection("Visuals")
-
 SettingsTab:CreateToggle({
     Name = "ESP",
     CurrentValue = true,
