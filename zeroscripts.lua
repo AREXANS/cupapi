@@ -1921,7 +1921,7 @@ local function setupSpeedEffect()
         SpeedEffect.flickerThread = task.spawn(function()
             local tickF = 0
             while SpeedEffect.flickerActive do
-                tickF += 1
+                tickF = tickF + 1
                 local spd = currentWalkSpeed or 16
                 local intensity = math.clamp(spd / 200, 0.2, 1.0)
 
@@ -3804,7 +3804,7 @@ local function createDropdown(name, options, callback)
     end
 
     loadMoreBtn.MouseButton1Click:Connect(function()
-        currentPage += 1
+        currentPage = currentPage + 1
         renderCards()
     end)
 
@@ -7212,19 +7212,19 @@ local function applyAllCustomIds(statusCb)
             local url = "rbxassetid://" .. tostring(numId or animId)
             pcall(function()
                 if slotName == "Run" and Animate.run and Animate.run.RunAnim then
-                    Animate.run.RunAnim.AnimationId = url; needRefresh = true; count += 1
+                    Animate.run.RunAnim.AnimationId = url; needRefresh = true; count = count + 1
                 elseif slotName == "Walk" and Animate.walk and Animate.walk.WalkAnim then
-                    Animate.walk.WalkAnim.AnimationId = url; needRefresh = true; count += 1
+                    Animate.walk.WalkAnim.AnimationId = url; needRefresh = true; count = count + 1
                 elseif slotName == "Fall" and Animate.fall and Animate.fall.FallAnim then
-                    Animate.fall.FallAnim.AnimationId = url; needRefresh = true; count += 1
+                    Animate.fall.FallAnim.AnimationId = url; needRefresh = true; count = count + 1
                 elseif slotName == "Jump" and Animate.jump and Animate.jump.JumpAnim then
-                    Animate.jump.JumpAnim.AnimationId = url; needRefresh = true; count += 1
+                    Animate.jump.JumpAnim.AnimationId = url; needRefresh = true; count = count + 1
                 elseif slotName == "Idle" and Animate.idle and Animate.idle.Animation1 then
-                    Animate.idle.Animation1.AnimationId = url; needRefresh = true; count += 1
+                    Animate.idle.Animation1.AnimationId = url; needRefresh = true; count = count + 1
                 elseif slotName == "Swim" and Animate.swim and Animate.swim.Swim then
-                    Animate.swim.Swim.AnimationId = url; needRefreshSwim = true; count += 1
+                    Animate.swim.Swim.AnimationId = url; needRefreshSwim = true; count = count + 1
                 elseif slotName == "Climb" and Animate.climb and Animate.climb.ClimbAnim then
-                    Animate.climb.ClimbAnim.AnimationId = url; needRefreshClimb = true; count += 1
+                    Animate.climb.ClimbAnim.AnimationId = url; needRefreshClimb = true; count = count + 1
                 end
             end)
         end
@@ -7519,7 +7519,7 @@ function createAnimationChangerPage()
         for _, entry in ipairs(animOptButtons) do
             local matches = q == "" or entry.preset.name:lower():find(q, 1, true)
             entry.button.Visible = matches and true or false
-            if matches then visibleCount += 1 end
+            if matches then visibleCount = visibleCount + 1 end
         end
         animEmptyLabel.Visible = (visibleCount == 0)
         local count = math.min(visibleCount, animMaxVisible)

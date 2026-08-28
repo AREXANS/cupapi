@@ -659,6 +659,8 @@ return function(sessionDataOrTimestamp, userRoleLegacy)
     PlayerListLayout, GeneralListLayout, TeleportListLayout, VipListLayout, SettingsListLayout, RekamanListLayout, ServerListLayout = nil, nil, nil, nil, nil, nil, nil
     setupPlayerTab, setupGeneralTab, setupTeleportTab, setupVipTab, setupSettingsTab, setupRekamanTab, setupServerTab = nil, nil, nil, nil, nil, nil, nil
     startRecording, stopRecording, stopActions, stopPlayback = nil, nil, nil, nil
+    isAutowalking, autowalkConnection, autowalkTargetData = false, nil, nil
+    isBackgroundRecordingEnabled, backgroundRecordings, backgroundRecordingConnections = false, {}, {}
 
     -- [[ TEMA UI BARU ]]
 
@@ -14995,6 +14997,111 @@ function playSequence(replayCountBox)
     playNextInSequence()
 end
 
+local function stopBackgroundRecordingForPlayer(player)
+    if backgroundRecordingConnections[player.UserId] then
+        backgroundRecordingConnections[player.UserId]:Disconnect()
+        backgroundRecordingConnections[player.UserId] = nil
+    end
+end
+
+local function startBackgroundRecordingForPlayer(player)
+    if not isBackgroundRecordingEnabled then return end
+    stopBackgroundRecordingForPlayer(player)
+
+    local function getCharData()
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if hrp and hum and hum.Health > 0 then return hrp, hum end
+        return nil, nil
+    end
+
+    local hrp, hum = getCharData()
+    if not hrp then return end
+
+    backgroundRecordings[player.Name] = {
+        frames = {},
+        targetUserId = player.UserId,
+        startTime = tick(),
+        lastTime = 0
+    }
+
+    backgroundRecordingConnections[player.UserId] = RunService.Heartbeat:Connect(function()
+        local c_hrp, c_hum = getCharData()
+        if not c_hrp or not isBackgroundRecordingEnabled then
+            stopBackgroundRecordingForPlayer(player)
+            return
+        end
+
+        local recData = backgroundRecordings[player.Name]
+        if not recData then return end
+
+        local sampleTime = tick() - recData.startTime
+        if (sampleTime - recData.lastTime) < (tonumber(SAMPLE_INTERVAL) or 0.05) then return end
+
+        local hSpeed = Vector3.new(c_hrp.AssemblyLinearVelocity.X, 0, c_hrp.AssemblyLinearVelocity.Z).Magnitude
+        local stateName = getCurrentMoveState and getCurrentMoveState(c_hum) or "Running"
+        local isJumpingOrFalling = stateName == "Jumping" or stateName == "Freefall"
+
+        if hSpeed > 0.5 or isJumpingOrFalling then
+            recData.lastTime = sampleTime
+            local _, yRot, _ = c_hrp.CFrame:ToOrientation()
+
+            table.insert(recData.frames, {
+                time = sampleTime,
+                position = vectorToTable(c_hrp.Position),
+                rotation = yRot,
+                velocity = vectorToTable(c_hrp.AssemblyLinearVelocity),
+                jumping = stateName == "Jumping",
+                state = stateName,
+                moveDirection = vectorToTable(c_hum.MoveDirection),
+                grounded = (c_hum.FloorMaterial ~= Enum.Material.Air)
+            })
+
+            -- Limit memory usage to last ~60 seconds to prevent lag
+            local maxFrames = (tonumber(SAMPLE_RATE) or 20) * 60
+            if #recData.frames > maxFrames then
+                table.remove(recData.frames, 1)
+            end
+        end
+    end)
+end
+
+local function manageBackgroundRecordingGlobal(state)
+    isBackgroundRecordingEnabled = state
+    if state then
+        for _, p in pairs(Players:GetPlayers()) do
+            startBackgroundRecordingForPlayer(p)
+            p.CharacterAdded:Connect(function()
+                task.wait(1)
+                startBackgroundRecordingForPlayer(p)
+            end)
+        end
+    else
+        for _, conn in pairs(backgroundRecordingConnections) do
+            conn:Disconnect()
+        end
+        backgroundRecordingConnections = {}
+        backgroundRecordings = {}
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    if isBackgroundRecordingEnabled then
+        player.CharacterAdded:Connect(function()
+            task.wait(1)
+            startBackgroundRecordingForPlayer(player)
+        end)
+    end
+end)
+Players.PlayerRemoving:Connect(function(player)
+    stopBackgroundRecordingForPlayer(player)
+    if backgroundRecordings[player.Name] then
+        backgroundRecordings[player.Name] = nil
+    end
+end)
+
+
 startRecording = function(targetPlayer, showNotificationFlag)
     if isRecording then return end
     targetPlayer = targetPlayer or LocalPlayer
@@ -15201,6 +15308,85 @@ startRecording = function(targetPlayer, showNotificationFlag)
         if isVisualLineEnabled then
             -- v11: jangan redraw line penuh tiap sample; pakai preview ringan supaya rekam tidak freeze.
             autoPerfectMaybeDrawLiveLine(currentRecordingData, 0)
+        end
+    end)
+end
+
+local function stopAutowalk()
+    isAutowalking = false
+    if autowalkConnection then
+        autowalkConnection:Disconnect()
+        autowalkConnection = nil
+    end
+    autowalkTargetData = nil
+    local char = LocalPlayer.Character
+    if char then
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if humanoid then humanoid:MoveTo(char:GetPivot().Position) end
+    end
+    showNotification("Autowalk dihentikan.", Color3.fromRGB(200, 150, 50))
+    if recStatusLabel then recStatusLabel.Text = "Autowalk berhenti." end
+end
+
+local function startAutowalk(recordingName)
+    local recordingData = savedRecordings[recordingName]
+    if not recordingData or not recordingData.frames or #recordingData.frames < 2 then
+        showNotification("Rekaman tidak valid atau terlalu pendek untuk Autowalk.", Color3.fromRGB(200, 50, 50))
+        return
+    end
+
+    if isAutowalking then
+        stopAutowalk()
+        task.wait(0.1)
+    end
+
+    local char = LocalPlayer.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+
+    if not root or not humanoid then
+        showNotification("Karakter tidak siap untuk Autowalk.", Color3.fromRGB(200, 50, 50))
+        return
+    end
+
+    isAutowalking = true
+    autowalkTargetData = recordingData.frames
+    showNotification("Autowalk dimulai mengikuti: " .. recordingName, Color3.fromRGB(50, 200, 50))
+    if recStatusLabel then recStatusLabel.Text = "Autowalk: " .. recordingName end
+
+    task.spawn(function()
+        local index = 1
+        local frames = autowalkTargetData
+        while isAutowalking and index <= #frames do
+            char = LocalPlayer.Character
+            root = char and char:FindFirstChild("HumanoidRootPart")
+            humanoid = char and char:FindFirstChildOfClass("Humanoid")
+            if not root or not humanoid or humanoid.Health <= 0 then
+                stopAutowalk()
+                break
+            end
+
+            local frame = frames[index]
+            local targetPos = tableToVector(frame.position)
+
+            humanoid:MoveTo(targetPos)
+            if frame.jumping then
+                humanoid.Jump = true
+            end
+
+            local dist = (root.Position - targetPos).Magnitude
+            local timeout = (frames[index + 1] and (frames[index + 1].time - frame.time)) or 0.1
+            local startTime = tick()
+
+            while isAutowalking and (root.Position - targetPos).Magnitude > 5 and (tick() - startTime) < math.max(0.5, timeout * 2) do
+                task.wait()
+            end
+
+            index = index + 1
+        end
+        if isAutowalking then
+            stopAutowalk()
+            showNotification("Autowalk selesai.", Color3.fromRGB(50, 200, 50))
         end
     end)
 end
@@ -15629,6 +15815,10 @@ setupRekamanTab = function()
     styleWindowIconButton(joinButton, 8)
     local deleteSelectedButton = UI.createIconButton(actionIconsScrollFrame, UI.Icons.DeleteRecord, Color3.fromRGB(200, 50, 50), compactIconSize)
     styleWindowIconButton(deleteSelectedButton, 9)
+    autowalkButton = UI.createIconButton(actionIconsScrollFrame, UI.Icons.ScannerAntenna or UI.Icons.Satellite or "111803809413609", Color3.fromRGB(50, 200, 150), compactIconSize)
+    styleWindowIconButton(autowalkButton, 10)
+    local saveBgRecordButton = UI.createIconButton(actionIconsScrollFrame, UI.Icons.SaveData or "101133127109835", Color3.fromRGB(150, 100, 255), compactIconSize)
+    styleWindowIconButton(saveBgRecordButton, 11)
     task.defer(refreshActionIconsCanvas)
 
     local visualLineToggle
@@ -15655,6 +15845,11 @@ setupRekamanTab = function()
             end
         end
     end, 3)
+
+    local bgRecordToggle
+    bgRecordToggle, _, _ = makeCompactToggle(compactTogglesRow, "BG Record", isBackgroundRecordingEnabled, function(v)
+        manageBackgroundRecordingGlobal(v)
+    end, 4)
 
     recStatusLabel = Instance.new("TextLabel", controlsBody)
     recStatusLabel.Name = "StatusLabel"
@@ -16051,9 +16246,66 @@ setupRekamanTab = function()
             stopRecording(true)
         elseif isPlaying or isPaused then
             stopPlayback(false, true)
+        elseif isAutowalking then
+            stopAutowalk()
         else
             showNotification("Tidak ada aksi berjalan. Pilih rekaman lalu Play, atau mulai rekam dari tombol rekam di Tab Rekaman.", Color3.fromRGB(200, 150, 50))
         end
+    end)
+
+    autowalkButton.MouseButton1Click:Connect(function()
+        if isAutowalking then
+            stopAutowalk()
+        else
+            local selectedCount, selectedName = 0, nil
+            for name, isSelected in pairs(selectedRecordings or {}) do
+                if isSelected then selectedCount = selectedCount + 1; selectedName = name end
+            end
+            if selectedCount ~= 1 then showNotification("Pilih satu rekaman untuk di-Autowalk.", Color3.fromRGB(200, 150, 50)); return end
+            startAutowalk(selectedName)
+        end
+    end)
+
+    saveBgRecordButton.MouseButton1Click:Connect(function()
+        if not isBackgroundRecordingEnabled then
+            showNotification("Fitur BG Record harus dinyalakan terlebih dahulu.", Color3.fromRGB(200, 50, 50))
+            return
+        end
+        local targetName = UI.promptInput("Masukkan nama pemain yang ingin disimpan rekamannya:")
+        if not targetName or targetName == "" then return end
+
+        local foundName = nil
+        for name, data in pairs(backgroundRecordings) do
+            if name:lower() == targetName:lower() then
+                foundName = name
+                break
+            end
+        end
+
+        if not foundName or #backgroundRecordings[foundName].frames < 2 then
+            showNotification("Rekaman pemain tidak ditemukan atau terlalu pendek.", Color3.fromRGB(200, 50, 50))
+            return
+        end
+
+        local baseName = "BG " .. foundName
+        local newName, i = baseName, 1
+        while savedRecordings[newName] do
+            i = i + 1
+            newName = baseName .. " " .. i
+        end
+
+        local bgData = backgroundRecordings[foundName]
+        savedRecordings[newName] = {
+            frames = bgData.frames,
+            targetUserId = bgData.targetUserId,
+            startPosition = bgData.frames[1].position,
+            startRotation = bgData.frames[1].rotation,
+            recordFps = SAMPLE_RATE,
+        }
+
+        saveRecordingsData()
+        if updateRecordingsList then updateRecordingsList() end
+        showNotification("Berhasil menyimpan rekaman background: " .. newName, Color3.fromRGB(50, 200, 50))
     end)
 
     if updateRecordingsList then updateRecordingsList() end
