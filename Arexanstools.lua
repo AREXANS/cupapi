@@ -15037,14 +15037,17 @@ local function startBackgroundRecordingForPlayer(player)
         if not recData then return end
 
         local sampleTime = tick() - recData.startTime
-        if (sampleTime - recData.lastTime) < (tonumber(SAMPLE_INTERVAL) or 0.05) then return end
+        local interval = tonumber(SAMPLE_INTERVAL) or 0.05
+        if (sampleTime - recData.lastTime) < interval then return end
+
+        -- Always update lastTime so it doesn't freeze tracking
+        recData.lastTime = recData.lastTime + interval
 
         local hSpeed = Vector3.new(c_hrp.AssemblyLinearVelocity.X, 0, c_hrp.AssemblyLinearVelocity.Z).Magnitude
         local stateName = getCurrentMoveState and getCurrentMoveState(c_hum) or "Running"
         local isJumpingOrFalling = stateName == "Jumping" or stateName == "Freefall"
 
         if hSpeed > 0.5 or isJumpingOrFalling then
-            recData.lastTime = sampleTime
             local _, yRot, _ = c_hrp.CFrame:ToOrientation()
 
             table.insert(recData.frames, {
@@ -16295,11 +16298,17 @@ setupRekamanTab = function()
         end
 
         local bgData = backgroundRecordings[foundName]
+        local cleanFrames = optimizeRecordingFramesLowLag(bgData.frames, false)
+        if #cleanFrames < 2 then
+            showNotification("Rekaman pemain tidak valid setelah dibersihkan.", Color3.fromRGB(200, 50, 50))
+            return
+        end
+
         savedRecordings[newName] = {
-            frames = bgData.frames,
+            frames = cleanFrames,
             targetUserId = bgData.targetUserId,
-            startPosition = bgData.frames[1].position,
-            startRotation = bgData.frames[1].rotation,
+            startPosition = cleanFrames[1].position,
+            startRotation = cleanFrames[1].rotation,
             recordFps = SAMPLE_RATE,
         }
 
