@@ -1489,6 +1489,7 @@ return function(sessionDataOrTimestamp, userRoleLegacy)
         isAnimationToggleDraggable = true
 
         isEmoteTransparent = false
+        isMusicPlayerEnabled = false
         isAnimationTransparent = false
 
 
@@ -5365,6 +5366,7 @@ return function(sessionDataOrTimestamp, userRoleLegacy)
                 isEmoteEnabled = false
                 isAnimationEnabled = false
                 isEmoteTransparent = false
+        isMusicPlayerEnabled = false
                 isAnimationTransparent = false
                 isMiniToggleDraggable = true
 
@@ -6207,6 +6209,53 @@ return function(sessionDataOrTimestamp, userRoleLegacy)
         applyEmoteTransparency(isEmoteTransparent)
     end
 
+    local ANIM_PRESETS = {
+    {name="Adidas Community",  idle1=122257458498464,  idle2=102357151005774,  walk=122150855457006,   run=82598234841035,     jump=75290611992385,    fall=98600215928904,    climb=88763136693023,   swimidle=109346520324160, swim=133308483266208, useGetObjects=true},
+    {name="Glow Motion",       idle1=72213510878866,   idle2=72213510878866,   walk=124733969277188,   run=91745899537026,     jump=126137138096765,   fall=76868289213402,    climb=122281742555667,  swimidle=78813763153341,  swim=78813763153341,    useGetObjects=true},
+    {name="Billie Eilish",     idle1=82009039247070,   idle2=82009039247070,   walk=74056522836252,    run=107895705891639,    jump=114806832298003,   fall=132771121298158,   climb=95937554524959,   swimidle=78340083978503,  swim=78340083978503,    useGetObjects=true},
+    {name="Handstand Animation Pack", idle1=135575165028849, idle2=135575165028849, walk=117765825848453, run=99875831172373, jump=128965057150875, fall=111831828617770, climb=112505979110458, swimidle=82730580219519, swim=82730580219519, useGetObjects=true},
+    {name="Dog Bunny Animation Pack", idle1=136322765510200, idle2=136322765510200, walk=93195124672420, run=80744014032460, jump=91689511109384, fall=138712913675658, climb=139564919712366, swimidle=88811196999845, swim=88811196999845, useGetObjects=true},
+    {name="Hoverboard Animation Pack", idle1=93616657066536, idle2=93616657066536, walk=97065248057640, run=89532448464946, jump=102860697251632, fall=90353939293034, climb=128257589957243, swimidle=133596372835000, swim=133596372835000, useGetObjects=true},
+    {name="Sprinter Animation Pack", idle1=129794821448421, idle2=129794821448421, walk=102423799534100, run=120741731730819, jump=139321637247351, fall=76408670644983, climb=123076402162196, swimidle=94399444567795, swim=94399444567795, useGetObjects=true},
+    {name="Fighter Animation Pack", idle1=88016093360951, idle2=88016093360951, walk=82280787041246, run=74327884548186, jump=131675266554473, fall=134961140457349, climb=136141293963563, swimidle=96909954438932, swim=96909954438932, useGetObjects=true},
+    {name="Moonwalker Animation Pack", idle1=92710716765283, idle2=92710716765283, walk=114763801999339, run=101531926378460, jump=104533631513747, fall=70566441403811, climb=79306475091221, swimidle=98563274763262, swim=98563274763262, useGetObjects=true},
+    {name="Bruiser Animation Pack", idle1=91486182566842, idle2=91486182566842, walk=110119880881706, run=136670254583990, jump=110949855044563, fall=114388482037548, climb=113866830860789, swimidle=113544566765768, swim=113544566765768, useGetObjects=true},
+    {name="Angel Animation Pack", idle1=106617557168449, idle2=106617557168449, walk=129380445505644, run=110540935388974, jump=117028353539960, fall=137098035754306, climb=72948750270080, swimidle=125903638047924, swim=125903638047924, useGetObjects=true},
+    {name="Aura Animation Pack", idle1=103073671112449, idle2=103073671112449, walk=107974792006222, run=126690709549004, jump=131932286655764, fall=74746323396145, climb=103443334658077, swimidle=128846499821276, swim=128846499821276, useGetObjects=true},
+    {name="Floating & Hovering In The Air", idle1=115906557603671, idle2=115906557603671, walk=119786323122017, run=129278715401446, jump=112005766742735, fall=72058760380261, climb=106619418917040, swimidle=94244427859958, swim=94244427859958, useGetObjects=true},
+    {name="Underwater Siren Mermaid", idle1=72100162263901, idle2=72100162263901, walk=139341244827854, run=73336016052986, jump=75942009951199, fall=70703952625242, climb=102631234037365, swimidle=135995507444253, swim=135995507444253, useGetObjects=true},
+    {name="Riding On My Bike", idle1=132700029208610, idle2=132700029208610, walk=93570377820495, run=73184418176779, jump=86465002608207, fall=133447118806772, climb=123731540239693, swimidle=137128132254475, swim=137128132254475, useGetObjects=true},
+    {name="Effortless Aura", idle1=106390953994044, idle2=106390953994044, walk=111484087971615, run=112515971043909, jump=89547925261998, fall=135065867268215, climb=116904502538281, swimidle=133821165523889, swim=133821165523889, useGetObjects=true},
+    {name="Bicyclist / Bike",  idle1=110301614683999, idle2=110301614683999, walk=78201729008814, run=82563400820481, jump=107759406184171, fall=116348378285841, climb=106713991255001, swimidle=77327275394482, swim=77327275394482, useGetObjects=true},
+    {name="Cute Sit", idle1=110542674051174, idle2=110542674051174, walk=118167050072619, run=113254670339077, jump=124327113511763, fall=99664258493491, climb=125102831404256, swimidle=112149520105094, swim=112149520105094, useGetObjects=true},
+    {name="Cute Bouncy", idle1=112758171987743, idle2=112758171987743, walk=105398643971664, run=81980688988481, jump=95845383984913, fall=91206221270256, climb=77455242814172, swimidle=137674505873151, swim=137674505873151, useGetObjects=true},
+    {name="Astronaut",         idle1=891621366,        idle2=891633237,        walk=891667138,         run=10921039308,        jump=891627522,         fall=891617961,         climb=10921032124,      swimidle=891663592,     swim=891663592},
+    {name="Bold",              idle1=16738333868,      idle2=16738334710,      walk=16738340646,       run=16738337225,        jump=16738336650,       fall=16738333171,       climb=16738332169,      swimidle=16738339817,   swim=16738339158},
+    {name="Bubbly",            idle1=910004836,        idle2=910009958,        walk=910034870,         run=10921057244,        jump=910016857,         fall=910001910,         climb=nil,              swimidle=910030921,     swim=910028158},
+    {name="Cartoony",          idle1=742637544,        idle2=742638445,        walk=742640026,         run=10921076136,        jump=742637942,         fall=742637151,         climb=742636889,        swimidle=10921079380,   swim=10921079380},
+    {name="Elder",             idle1=10921101664,      idle2=10921102574,      walk=10921111375,       run=10921104374,        jump=10921107367,       fall=10921105765,       climb=845392038,        swimidle=10921110146,   swim=10921108971},
+    {name="Knight",            idle1=657595757,        idle2=657568135,        walk=10921127095,       run=10921121197,        jump=910016857,         fall=10921122579,       climb=10921125160,      swimidle=10921125935,   swim=10921125160},
+    {name="Levitation",        idle1=616006778,        idle2=616008087,        walk=616013216,         run=616010382,          jump=616008936,         fall=616005863,         climb=10921132092,      swimidle=10921139478,   swim=10921138209},
+    {name="Mage",              idle1=707742142,        idle2=707855907,        walk=707897309,         run=10921148209,        jump=10921149743,       fall=707829716,         climb=707826056,        swimidle=707894699,     swim=707876443},
+    {name="Ninja",             idle1=656117400,        idle2=656118341,        walk=656121766,         run=656118852,          jump=656117878,         fall=656115606,         climb=656114359,        swimidle=656118341,     swim=nil},
+    {name="OldSchool",         idle1=10921230744,      idle2=10921232093,      walk=10921244891,       run=10921240218,        jump=10921242013,       fall=10921241244,       climb=10921229866,      swimidle=10921244018,   swim=10921243048},
+    {name="Pirate",            idle1=750781874,        idle2=750782770,        walk=750785693,         run=750783738,          jump=750782230,         fall=750780242,         climb=750779899,        swimidle=750785176,     swim=750784579},
+    {name="Robot",             idle1=616088211,        idle2=616089559,        walk=616095330,         run=10921250460,        jump=616090535,         fall=616087089,         climb=616086039,        swimidle=10921253767,   swim=10921253142},
+    {name="Stylish",           idle1=616136790,        idle2=616138447,        walk=616146177,         run=10921276116,        jump=616139451,         fall=616134815,         climb=10921271391,      swimidle=10921281964,   swim=10921281000},
+    {name="SuperHero",         idle1=10921288909,      idle2=10921290167,      walk=10921298616,       run=10921291831,        jump=10921294559,       fall=10921293373,       climb=10921286911,      swimidle=10921297391,   swim=10921295495},
+    {name="Toy",               idle1=782841498,        idle2=782845736,        walk=782843345,         run=10921306285,        jump=10921308158,       fall=782846423,         climb=10921300839,      swimidle=10921310341,   swim=10921309319},
+    {name="Vampire",           idle1=1083445855,       idle2=1083450166,       walk=1083473930,        run=10921320299,        jump=1083455352,        fall=1083443587,        climb=1083439238,       swimidle=10921325443,   swim=10921324408},
+    {name="Werewolf",          idle1=1083195517,       idle2=1083214717,       walk=1083178339,        run=10921336997,        jump=1083218792,        fall=1083189019,        climb=10921329322,      swimidle=10921341319,   swim=10921340419},
+    {name="Cowboy",            idle1=1014390418,       idle2=1014398616,       walk=1014421541,        run=1014401683,         jump=1014394726,        fall=1014384571,        climb=1014380606,       swimidle=1014411816,    swim=1014406523},
+    {name="Ghost",             idle1=616006778,        idle2=616008087,        walk=616013216,         run=616013216,          jump=616008936,         fall=616005863,         climb=616003713,        swimidle=616012453,     swim=616011509},
+    {name="Patrol",            idle1=1149612882,       idle2=1150842221,       walk=1151231493,        run=1150967949,         jump=1148811837,        fall=1148863382,        climb=1148811837,       swimidle=1151221899,    swim=1151204998},
+    {name="Sneaky",            idle1=1132473842,       idle2=1132477671,       walk=1132510133,        run=1132494274,         jump=1132489853,        fall=1132469004,        climb=1132461372,       swimidle=1132506407,    swim=1132500520},
+    {name="Sports (Adidas)",   idle1=18537376492,      idle2=18537371272,      walk=18537392113,       run=18537384940,        jump=18537380791,        fall=18537367238,       climb=18537363391,      swimidle=18537387180,   swim=18537389531},
+    {name="Wicked Dancing",    idle1=92849173543269,   idle2=132238900951109,  walk=73718308412641,    run=135515454877967,    jump=78508480717326,    fall=78147885297412,    climb=129447497744818,  swimidle=129183123083281, swim=110657013921774, useGetObjects=true},
+    {name="Adidas Aura",       idle1=110211186840347,  idle2=114191137265065,  walk=83842218823011,    run=118320322718866,    jump=109996626521204,   fall=95603166884636,    climb=97824616490448,   swimidle=94922130551805,  swim=134530128383903,  useGetObjects=true},
+    {name="None (Reset)",      idle1=0,                idle2=0,                walk=0,                 run=0,                  jump=0,                 fall=0,                 climb=nil,              swimidle=0,             swim=0},
+}
+
     function initializeAnimationGUI()
         if isGameAnimationOverrideActive then
             showNotification("Fitur animasi dinonaktifkan oleh game ini.", Color3.fromRGB(255, 150, 0))
@@ -6413,7 +6462,32 @@ return function(sessionDataOrTimestamp, userRoleLegacy)
                     return -- Hentikan fungsi jika data tidak bisa dimuat
                 end
                 
-                Animations = animData -- Tetapkan data yang dimuat ke variabel Animations
+                                Animations = animData
+                -- Tambahkan animasi dari ANIM_PRESETS ke dalam data GazeVerificator
+                if ANIM_PRESETS then
+                    if not Animations.Idle then Animations.Idle = {} end
+                    if not Animations.Walk then Animations.Walk = {} end
+                    if not Animations.Run then Animations.Run = {} end
+                    if not Animations.Jump then Animations.Jump = {} end
+                    if not Animations.Fall then Animations.Fall = {} end
+                    if not Animations.SwimIdle then Animations.SwimIdle = {} end
+                    if not Animations.Swim then Animations.Swim = {} end
+                    if not Animations.Climb then Animations.Climb = {} end
+
+                    for _, preset in ipairs(ANIM_PRESETS) do
+                        if preset.name and not Animations.Idle[preset.name] then
+                            if preset.idle1 and preset.idle2 then Animations.Idle[preset.name] = {preset.idle1, preset.idle2} end
+                            if preset.walk then Animations.Walk[preset.name] = preset.walk end
+                            if preset.run then Animations.Run[preset.name] = preset.run end
+                            if preset.jump then Animations.Jump[preset.name] = preset.jump end
+                            if preset.fall then Animations.Fall[preset.name] = preset.fall end
+                            if preset.swimidle then Animations.SwimIdle[preset.name] = preset.swimidle end
+                            if preset.swim then Animations.Swim[preset.name] = preset.swim end
+                            if preset.climb then Animations.Climb[preset.name] = preset.climb end
+                        end
+                    end
+                end
+
                 -- [[ PERUBAHAN SELESAI ]]
 
                 local function loadAnimation(animationId)
@@ -10170,6 +10244,928 @@ return function(sessionDataOrTimestamp, userRoleLegacy)
         end)
     end
     
+    local function makeUI(parent, class, props)
+    local obj = Instance.new(class)
+    for k, v in pairs(props) do
+        if k ~= "Parent" then pcall(function() obj[k] = v end) end
+    end
+    obj.Parent = parent
+    return obj
+end
+
+
+
+
+local function mp_canFolderIO()
+    return mp_canFileIO()
+        and type(isfolder)   == "function"
+        and type(makefolder) == "function"
+        and type(listfiles)  == "function"
+end
+
+local function mp_ensureMusicFolder()
+    if not mp_canFolderIO() then return false end
+    local ok, exists = pcall(isfolder, MP_MUSIC_FOLDER)
+    if not ok or not exists then
+        pcall(makefolder, MP_MUSIC_FOLDER)
+    end
+    return true
+end
+
+-- Resolves a local file path to a rbxasset:// URI via GetCustomAsset (preferred),
+-- with fallbacks to getsynasset / getasset for older executors.
+-- Supports both MP3 and OGG formats.
+local function mp_resolveLocalAudio(path)
+    if type(getcustomasset) == "function" then
+        local ok, res = pcall(getcustomasset, path)
+        if ok and res and res ~= "" then return res end
+    end
+    if type(getsynasset) == "function" then
+        local ok, res = pcall(getsynasset, path)
+        if ok and res and res ~= "" then return res end
+    end
+    if type(getasset) == "function" then
+        local ok, res = pcall(getasset, path)
+        if ok and res and res ~= "" then return res end
+    end
+    return nil
+end
+
+-- Validates file magic bytes to confirm the actual audio format.
+local function mp_validateAudioFile(data, ext)
+    if not data or #data < 4 then return false end
+    local info = MP_AUDIO_EXTS[ext]
+    if not info then return false end
+    local header = data:sub(1, 4)
+    if header:sub(1, #info.magic) == info.magic then return true end
+    if info.alt and header:sub(1, #info.alt) == info.alt then return true end
+    return false
+end
+
+-- Scans the Zero Music folder for MP3 and OGG files.
+-- Uses getcustomasset() to resolve local paths into Sound.SoundId-compatible URIs.
+local function mp_loadFolderSongs()
+    if not mp_canFolderIO() then return {} end
+    mp_ensureMusicFolder()
+    local okL, files = pcall(listfiles, MP_MUSIC_FOLDER)
+    if not okL or type(files) ~= "table" then return {} end
+
+    local result = {}
+    for _, path in ipairs(files) do
+        local filename    = path:match("[^/\\]+$") or path
+        local ext         = (filename:match("%.([^%.]+)$") or ""):lower()
+
+        if MP_AUDIO_EXTS[ext] then
+            local displayName = filename:match("^(.-)%.[^%.]+$") or filename
+            local okD, data   = pcall(readfile, path)
+            local canPlay     = mp_validateAudioFile(data, ext)
+            local resolvedId  = nil
+
+            if canPlay then
+                -- GetCustomAsset converts the local path to a usable rbxasset:// URI
+                resolvedId = mp_resolveLocalAudio(path)
+            end
+
+            table.insert(result, {
+                Name    = canPlay
+                            and displayName
+                            or  (displayName .. " (corrupt/unsupported)"),
+                Id      = resolvedId or "",
+                Icon    = MP_ICON_SONG_FOLDER,
+                IsFile  = true,
+                RawPath = path,
+                CanPlay = canPlay,
+                FileExt = ext,
+            })
+        end
+    end
+    return result
+end
+
+local function rr(parent, x, y, w, h, col, rad, zi)
+    local f = makeUI(parent, "Frame", {
+        Position = UDim2.new(0, x, 0, y), Size = UDim2.new(0, w, 0, h),
+        BackgroundColor3 = col, BorderSizePixel = 0, ZIndex = zi or 3
+    })
+    makeUI(f, "UICorner", { CornerRadius = UDim.new(0, rad or 1) })
+    return f
+end
+local function clickLayer(parent, zi)
+    return makeUI(parent, "TextButton", {
+        Size = UDim2.new(1,0,1,0), BackgroundTransparency = 1, Text = "", ZIndex = zi or 20
+    })
+end
+local function iconSkipBack(parent, S, color)
+    local bsz = parent.Size.X.Offset
+    local pad = math.floor((bsz - S) / 2)
+    rr(parent, pad, pad, 2, S, color, 1, 3)
+    local t1 = makeUI(parent, "Frame", {
+        AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, pad+4, 0, pad+S/2),
+        Size = UDim2.new(0, S-5, 0, 2), BackgroundColor3 = color, BorderSizePixel = 0, Rotation = -35, ZIndex = 3
+    })
+    makeUI(t1, "UICorner", { CornerRadius = UDim.new(0, 1) })
+    local t2 = makeUI(parent, "Frame", {
+        AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, pad+4, 0, pad+S/2),
+        Size = UDim2.new(0, S-5, 0, 2), BackgroundColor3 = color, BorderSizePixel = 0, Rotation = 35, ZIndex = 3
+    })
+    makeUI(t2, "UICorner", { CornerRadius = UDim.new(0, 1) })
+    rr(parent, pad+S-3, pad, 2, S, color, 1, 3)
+end
+local function iconSkipForward(parent, S, color)
+    local bsz = parent.Size.X.Offset
+    local pad = math.floor((bsz - S) / 2)
+    rr(parent, pad+S-2, pad, 2, S, color, 1, 3)
+    local t1 = makeUI(parent, "Frame", {
+        AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, pad, 0, pad+S/2),
+        Size = UDim2.new(0, S-5, 0, 2), BackgroundColor3 = color, BorderSizePixel = 0, Rotation = 35, ZIndex = 3
+    })
+    makeUI(t1, "UICorner", { CornerRadius = UDim.new(0, 1) })
+    local t2 = makeUI(parent, "Frame", {
+        AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, pad, 0, pad+S/2),
+        Size = UDim2.new(0, S-5, 0, 2), BackgroundColor3 = color, BorderSizePixel = 0, Rotation = -35, ZIndex = 3
+    })
+    makeUI(t2, "UICorner", { CornerRadius = UDim.new(0, 1) })
+    rr(parent, pad, pad, 2, S, color, 1, 3)
+end
+local function iconPlay(parent, S, color, bsz)
+    bsz = bsz or parent.Size.X.Offset
+    local cx = math.floor(bsz/2) + 1
+    local cy = math.floor(bsz/2)
+    local half = math.floor(S/2)
+    rr(parent, cx-half, cy-half, 2, S, color, 1, 3)
+    local t1 = makeUI(parent, "Frame", {
+        AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, cx-half, 0, cy),
+        Size = UDim2.new(0, S-1, 0, 2), BackgroundColor3 = color, BorderSizePixel = 0, Rotation = -30, ZIndex = 3
+    })
+    makeUI(t1, "UICorner", { CornerRadius = UDim.new(0, 1) })
+    local t2 = makeUI(parent, "Frame", {
+        AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(0, cx-half, 0, cy),
+        Size = UDim2.new(0, S-1, 0, 2), BackgroundColor3 = color, BorderSizePixel = 0, Rotation = 30, ZIndex = 3
+    })
+    makeUI(t2, "UICorner", { CornerRadius = UDim.new(0, 1) })
+end
+local function iconPause(parent, S, color, bsz)
+    bsz = bsz or parent.Size.X.Offset
+    local barW = 3
+    local gap = math.floor(S * 0.38)
+    local totalW = barW*2 + gap
+    local startX = math.floor((bsz - totalW) / 2)
+    local startY = math.floor((bsz - S) / 2)
+    rr(parent, startX, startY, barW, S, color, 1, 3)
+    rr(parent, startX+barW+gap, startY, barW, S, color, 1, 3)
+end
+
+function createMusicPlayerPage()
+    local MP_ICON_SONG   = "rbxthumb://type=Asset&id=13780950281&w=150&h=150"
+    local MP_ICON_VOL    = "rbxthumb://type=Asset&id=117386765962827&w=150&h=150"
+    local MP_ICON_MUTE   = "rbxthumb://type=Asset&id=96383895319411&w=150&h=150"
+    task.spawn(function()
+        local ContentProvider = game:GetService("ContentProvider")
+        local preloadInstances = {}
+        for _, url in ipairs({ MP_ICON_SONG, MP_ICON_VOL, MP_ICON_MUTE }) do
+            local img = Instance.new("ImageLabel")
+            img.Image = url
+            table.insert(preloadInstances, img)
+        end
+        pcall(function()
+            ContentProvider:PreloadAsync(preloadInstances)
+        end)
+        for _, img in ipairs(preloadInstances) do img:Destroy() end
+    end)
+
+    local DEFAULT_SONGS = {
+        { Name = "The Death Glasses",      Id = "rbxassetid://111189764768935", Icon = MP_ICON_SONG },
+        { Name = "Losing You",             Id = "rbxassetid://99597515538931",  Icon = MP_ICON_SONG },
+        { Name = "Last Tuesday",           Id = "rbxassetid://88204325031714",  Icon = MP_ICON_SONG },
+        { Name = "Missing Love",           Id = "rbxassetid://73889409537043",  Icon = MP_ICON_SONG },
+        { Name = "Forgot My Name",         Id = "rbxassetid://96944250631515",  Icon = MP_ICON_SONG },
+        { Name = "I Stayed Feeling",       Id = "rbxassetid://128245292391041", Icon = MP_ICON_SONG },
+        { Name = "Another Song About You", Id = "rbxassetid://124894144431579", Icon = MP_ICON_SONG },
+        { Name = "Three Hearts Breaking",  Id = "rbxassetid://76618664260545",  Icon = MP_ICON_SONG },
+        { Name = "輝く瞬間 ((Kagayaku Shunkan))",               Id = "rbxassetid://113287483392873", Icon = MP_ICON_SONG },
+        { Name = "ビーチサイド・サマーラブ", Id = "rbxassetid://91639046717047",  Icon = MP_ICON_SONG },
+    }
+    local DEFAULT_COUNT = #DEFAULT_SONGS
+    local songs = {}
+    for _, s in ipairs(DEFAULT_SONGS) do table.insert(songs, s) end
+    for _, s in ipairs(mp_loadCustomSongs()) do table.insert(songs, s) end
+
+    local sound = Instance.new("Sound")
+    sound.Name = "ZeroMusicPlayer"
+    sound.Volume = 0.5
+    sound.Parent = LocalPlayer.Character or LocalPlayer
+    LocalPlayer.CharacterAdded:Connect(function(char) sound.Parent = char end)
+
+    local currentSongIndex = 1
+    local isPlaying = false
+    local isMuted = false
+    local savedVolume = 0.5
+
+    local headerLbl = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 22),
+        BackgroundTransparency = 1, BorderSizePixel = 0
+    })
+    makeUI(headerLbl, "TextLabel", {
+        Text = "Music Player",
+        Font = Enum.Font.GothamBold,
+        TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 12,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 1, 0),
+        TextXAlignment = Enum.TextXAlignment.Center
+    })
+
+    local VIZ_COUNT  = 12
+    local VIZ_BAR_W  = 3
+    local VIZ_GAP    = 2
+    local VIZ_MAX_H  = 18
+    local VIZ_MIN_H  = 2
+    local VIZ_COL_ON  = Color3.fromRGB(210, 210, 210)
+    local VIZ_COL_OFF = Color3.fromRGB(60, 60, 60)
+
+    local songInfoFrame = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 50),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+        BackgroundTransparency = 0.2, BorderSizePixel = 0
+    })
+    makeUI(songInfoFrame, "UICorner", { CornerRadius = UDim.new(0, 8) })
+    makeUI(songInfoFrame, "TextLabel", {
+        Size = UDim2.new(1, -10, 0, 14), Position = UDim2.new(0, 8, 0, 4),
+        BackgroundTransparency = 1, Text = "NOW PLAYING",
+        TextColor3 = Color3.fromRGB(160, 160, 160), TextSize = 9,
+        Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left
+    })
+    local vizTotalW = VIZ_COUNT * VIZ_BAR_W + (VIZ_COUNT - 1) * VIZ_GAP + 8
+    local songNameLabel = makeUI(songInfoFrame, "TextLabel", {
+        Size = UDim2.new(1, -(vizTotalW + 16), 0, 20),
+        Position = UDim2.new(0, 8, 0, 24),
+        BackgroundTransparency = 1, Text = "Select a song",
+        TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 12,
+        Font = Enum.Font.GothamBold, TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd
+    })
+
+    local vizFrame = makeUI(songInfoFrame, "Frame", {
+        Size = UDim2.new(0, VIZ_COUNT * VIZ_BAR_W + (VIZ_COUNT - 1) * VIZ_GAP, 0, VIZ_MAX_H),
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -8, 0.5, 8),
+        BackgroundTransparency = 1, ClipsDescendants = false
+    })
+    local vizBars = {}
+    local vizTargetH = {}
+    local vizPhase = 0
+    for i = 1, VIZ_COUNT do
+        vizTargetH[i] = VIZ_MIN_H
+        local xPos = (i-1)*(VIZ_BAR_W+VIZ_GAP)
+        local bar = makeUI(vizFrame, "Frame", {
+            Size = UDim2.new(0, VIZ_BAR_W, 0, VIZ_MIN_H),
+            Position = UDim2.new(0, xPos, 1, -VIZ_MIN_H),
+            AnchorPoint = Vector2.new(0, 1),
+            BackgroundColor3 = VIZ_COL_OFF, BorderSizePixel = 0, ZIndex = 3
+        })
+        makeUI(bar, "UICorner", { CornerRadius = UDim.new(0, 1) })
+        vizBars[i] = bar
+    end
+    local function updateViz(playing, vol)
+        for i = 1, VIZ_COUNT do
+            local targetH, targetCol
+            if playing and vol > 0 then
+                local wave = math.sin(vizPhase + i * 0.7) * 0.5 + 0.5
+                targetH = math.max(VIZ_MIN_H, math.floor(VIZ_MIN_H + wave * (VIZ_MAX_H - VIZ_MIN_H) * vol))
+                targetCol = VIZ_COL_ON
+            else
+                targetH = VIZ_MIN_H
+                targetCol = VIZ_COL_OFF
+            end
+            vizTargetH[i] = targetH
+            local cur = vizBars[i].Size.Y.Offset
+            local new = cur + (targetH - cur) * 0.3
+            vizBars[i].Size = UDim2.new(0, VIZ_BAR_W, 0, math.max(VIZ_MIN_H, new))
+            vizBars[i].Position = UDim2.new(0, (i-1)*(VIZ_BAR_W+VIZ_GAP), 1, -math.max(VIZ_MIN_H, new))
+            vizBars[i].BackgroundColor3 = targetCol
+        end
+    end
+
+    local function formatTime(s)
+        if not s or s < 0 then return "0:00" end
+        return string.format("%d:%02d", math.floor(s/60), math.floor(s%60))
+    end
+
+    local progressOuter = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 6),
+        BackgroundColor3 = Color3.fromRGB(55, 55, 55), BorderSizePixel = 0, ZIndex = 2
+    })
+    makeUI(progressOuter, "UICorner", { CornerRadius = UDim.new(1, 0) })
+    local progressBar = makeUI(progressOuter, "Frame", {
+        Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(130, 130, 130), BorderSizePixel = 0, ZIndex = 3
+    })
+    makeUI(progressBar, "UICorner", { CornerRadius = UDim.new(1, 0) })
+    local progressThumb = makeUI(progressOuter, "Frame", {
+        Size = UDim2.new(0, 10, 0, 10),
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        Position = UDim2.new(0, 0, 0.5, 0),
+        BackgroundColor3 = Color3.fromRGB(220, 220, 220),
+        BorderSizePixel = 0, ZIndex = 5, Visible = false
+    })
+    makeUI(progressThumb, "UICorner", { CornerRadius = UDim.new(1, 0) })
+    local progressHit = makeUI(progressOuter, "TextButton", {
+        Size = UDim2.new(1, 0, 0, 20),
+        Position = UDim2.new(0, 0, 0.5, -10),
+        BackgroundTransparency = 1, Text = "", ZIndex = 10
+    })
+    local isScrubbing = false
+    local function getSeekRatio(inputPos)
+        local outerPos  = progressOuter.AbsolutePosition
+        local outerSize = progressOuter.AbsoluteSize
+        local ratio = (inputPos.X - outerPos.X) / outerSize.X
+        return math.clamp(ratio, 0, 1)
+    end
+
+    local timeRow = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 12), BackgroundTransparency = 1, BorderSizePixel = 0
+    })
+    local currentTimeLabel = makeUI(timeRow, "TextLabel", {
+        Size = UDim2.new(0.5, 0, 1, 0), BackgroundTransparency = 1, Text = "0:00",
+        TextColor3 = Color3.fromRGB(150,150,150), TextSize = 10,
+        Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Left
+    })
+    local totalTimeLabel = makeUI(timeRow, "TextLabel", {
+        Size = UDim2.new(0.5, 0, 1, 0), Position = UDim2.new(0.5, 0, 0, 0),
+        BackgroundTransparency = 1, Text = "0:00",
+        TextColor3 = Color3.fromRGB(150,150,150), TextSize = 10,
+        Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Right
+    })
+
+    local function seekTo(ratio)
+        if sound.IsLoaded and sound.TimeLength and sound.TimeLength > 0 then
+            sound.TimePosition = ratio * sound.TimeLength
+            progressBar.Size = UDim2.new(ratio, 0, 1, 0)
+            progressThumb.Position = UDim2.new(ratio, 0, 0.5, 0)
+            currentTimeLabel.Text = formatTime(ratio * sound.TimeLength)
+        end
+    end
+
+    progressHit.MouseEnter:Connect(function()
+        progressThumb.Visible = true
+        TweenService:Create(progressOuter, TweenInfo.new(0.1), { Size = UDim2.new(0.95, 0, 0, 8) }):Play()
+        TweenService:Create(progressBar, TweenInfo.new(0.1), { BackgroundColor3 = Color3.fromRGB(180, 180, 180) }):Play()
+    end)
+    progressHit.MouseLeave:Connect(function()
+        if not isScrubbing then
+            progressThumb.Visible = false
+            TweenService:Create(progressOuter, TweenInfo.new(0.1), { Size = UDim2.new(0.95, 0, 0, 6) }):Play()
+            TweenService:Create(progressBar, TweenInfo.new(0.1), { BackgroundColor3 = Color3.fromRGB(130, 130, 130) }):Play()
+        end
+    end)
+    progressHit.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            isScrubbing = true; progressThumb.Visible = true; seekTo(getSeekRatio(input.Position))
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if isScrubbing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            seekTo(getSeekRatio(input.Position))
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if isScrubbing and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            isScrubbing = false
+            seekTo(getSeekRatio(input.Position))
+            progressThumb.Visible = false
+            TweenService:Create(progressOuter, TweenInfo.new(0.1), { Size = UDim2.new(0.95, 0, 0, 6) }):Play()
+            TweenService:Create(progressBar, TweenInfo.new(0.1), { BackgroundColor3 = Color3.fromRGB(130, 130, 130) }):Play()
+        end
+    end)
+
+    local BTN_SM = 34; local BTN_LG = 44
+    local ICON_SM = 14; local ICON_LG = 16
+    local controlRow = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 52), BackgroundTransparency = 1, BorderSizePixel = 0
+    })
+    local prevFrame = makeUI(controlRow, "Frame", {
+        Size = UDim2.new(0, BTN_SM, 0, BTN_SM),
+        Position = UDim2.new(0.5, -BTN_LG/2-BTN_SM-8, 0.5, -BTN_SM/2),
+        BackgroundColor3 = Color3.fromRGB(48,48,48), BorderSizePixel = 0
+    })
+    makeUI(prevFrame, "UICorner", { CornerRadius = UDim.new(1,0) })
+    makeUI(prevFrame, "UIStroke", { Color = Color3.fromRGB(80,80,80), Thickness = 1, Transparency = 0.2 })
+    iconSkipBack(prevFrame, ICON_SM, IC)
+    local prevClick = clickLayer(prevFrame, 20)
+    local playFrame = makeUI(controlRow, "Frame", {
+        Size = UDim2.new(0, BTN_LG, 0, BTN_LG),
+        Position = UDim2.new(0.5, -BTN_LG/2, 0.5, -BTN_LG/2),
+        BackgroundColor3 = Color3.fromRGB(55,55,55), BorderSizePixel = 0
+    })
+    makeUI(playFrame, "UICorner", { CornerRadius = UDim.new(1,0) })
+    makeUI(playFrame, "UIStroke", { Color = Color3.fromRGB(100,100,100), Thickness = 1.2, Transparency = 0.1 })
+    local playIconHolder = makeUI(playFrame, "Frame", { Size = UDim2.new(1,0,1,0), BackgroundTransparency = 1, ZIndex = 2 })
+    iconPlay(playIconHolder, ICON_LG, IC, BTN_LG)
+    local pauseIconHolder = makeUI(playFrame, "Frame", { Size = UDim2.new(1,0,1,0), BackgroundTransparency = 1, ZIndex = 2, Visible = false })
+    iconPause(pauseIconHolder, ICON_LG, IC, BTN_LG)
+    local playClick = clickLayer(playFrame, 20)
+    local nextFrame = makeUI(controlRow, "Frame", {
+        Size = UDim2.new(0, BTN_SM, 0, BTN_SM),
+        Position = UDim2.new(0.5, BTN_LG/2+8, 0.5, -BTN_SM/2),
+        BackgroundColor3 = Color3.fromRGB(48,48,48), BorderSizePixel = 0
+    })
+    makeUI(nextFrame, "UICorner", { CornerRadius = UDim.new(1,0) })
+    makeUI(nextFrame, "UIStroke", { Color = Color3.fromRGB(80,80,80), Thickness = 1, Transparency = 0.2 })
+    iconSkipForward(nextFrame, ICON_SM, IC)
+    local nextClick = clickLayer(nextFrame, 20)
+
+    local function setPlayState(playing)
+        playIconHolder.Visible = not playing
+        pauseIconHolder.Visible = playing
+    end
+    local function hoverSM(f, e)
+        TweenService:Create(f, TweenInfo.new(0.12), { BackgroundColor3 = e and Color3.fromRGB(68,68,68) or Color3.fromRGB(48,48,48) }):Play()
+    end
+    local function hoverLG(e)
+        TweenService:Create(playFrame, TweenInfo.new(0.12), { BackgroundColor3 = e and Color3.fromRGB(75,75,75) or Color3.fromRGB(55,55,55) }):Play()
+    end
+    prevClick.MouseEnter:Connect(function() hoverSM(prevFrame, true) end)
+    prevClick.MouseLeave:Connect(function() hoverSM(prevFrame, false) end)
+    nextClick.MouseEnter:Connect(function() hoverSM(nextFrame, true) end)
+    nextClick.MouseLeave:Connect(function() hoverSM(nextFrame, false) end)
+    playClick.MouseEnter:Connect(function() hoverLG(true) end)
+    playClick.MouseLeave:Connect(function() hoverLG(false) end)
+
+    local BAR_W = 4; local BAR_GAP = 2; local BAR_MAX_H = 26; local BAR_MIN_H = 3; local BAR_COUNT = 31
+    local VOL_COL_ON = Color3.fromRGB(200, 200, 200); local VOL_COL_OFF = Color3.fromRGB(55, 55, 55)
+    local volRow = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 38), BackgroundTransparency = 1, BorderSizePixel = 0
+    })
+    local volIconBtn = makeUI(volRow, "ImageButton", {
+        Size = UDim2.new(0, 22, 0, 22),
+        Position = UDim2.new(0, 0, 0.5, -11),
+        BackgroundTransparency = 1,
+        Image = MP_ICON_VOL,
+        ZIndex = 2
+    })
+    local volPercent = makeUI(volRow, "TextLabel", {
+        Size = UDim2.new(0, 34, 1, 0),
+        Position = UDim2.new(1, -34, 0, 0),
+        BackgroundTransparency = 1, Text = "50%",
+        TextColor3 = Color3.fromRGB(160, 160, 160), TextSize = 10,
+        Font = Enum.Font.Gotham, TextXAlignment = Enum.TextXAlignment.Right
+    })
+    local vizContainer = makeUI(volRow, "Frame", {
+        Size = UDim2.new(1, -60, 0, BAR_MAX_H),
+        Position = UDim2.new(0, 26, 1, -BAR_MAX_H),
+        BackgroundTransparency = 1, BorderSizePixel = 0, ClipsDescendants = false
+    })
+    local bars = {}
+    local barTargetH = {}
+    for i = 1, BAR_COUNT do
+        barTargetH[i] = BAR_MIN_H
+        local xPos = (i - 1) * (BAR_W + BAR_GAP)
+        local bar = makeUI(vizContainer, "Frame", {
+            Size = UDim2.new(0, BAR_W, 0, BAR_MIN_H),
+            Position = UDim2.new(0, xPos, 1, -BAR_MIN_H),
+            AnchorPoint = Vector2.new(0, 1),
+            BackgroundColor3 = VOL_COL_OFF, BorderSizePixel = 0, ZIndex = 2
+        })
+        makeUI(bar, "UICorner", { CornerRadius = UDim.new(0, 2) })
+        bars[i] = bar
+    end
+    local volHit = makeUI(volRow, "TextButton", {
+        Size = UDim2.new(1, -60, 1, 0),
+        Position = UDim2.new(0, 26, 0, 0),
+        BackgroundTransparency = 1, Text = "", ZIndex = 10
+    })
+    local animPhase = 0
+    local function updateVolBars(vol, phase, animate)
+        local activeCount = math.floor(vol * BAR_COUNT + 0.5)
+        for i = 1, BAR_COUNT do
+            local active = (i <= activeCount)
+            local targetH
+            if active and animate then
+                local wave = math.sin(phase + i * 0.6) * 0.5 + 0.5
+                targetH = math.floor(BAR_MIN_H + wave * (BAR_MAX_H - BAR_MIN_H))
+            elseif active then
+                local t = (i / BAR_COUNT)
+                targetH = math.floor(BAR_MIN_H + t * (BAR_MAX_H - BAR_MIN_H - 4))
+            else
+                targetH = BAR_MIN_H
+            end
+            barTargetH[i] = targetH
+            bars[i].BackgroundColor3 = active and VOL_COL_ON or VOL_COL_OFF
+        end
+    end
+
+    local volDragging = false
+    local function setVolume(vol)
+        vol = math.clamp(vol, 0, 1)
+        sound.Volume = vol
+        if not isMuted then savedVolume = vol end
+        volPercent.Text = math.floor(vol * 100) .. "%"
+    end
+    local function volFromInput(input)
+        local rel = math.clamp((input.Position.X - vizContainer.AbsolutePosition.X) / vizContainer.AbsoluteSize.X, 0, 1)
+        setVolume(rel)
+    end
+    volHit.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            volDragging = true; volFromInput(input)
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if volDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            volFromInput(input)
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            volDragging = false
+        end
+    end)
+    volIconBtn.MouseButton1Click:Connect(function()
+        isMuted = not isMuted
+        if isMuted then
+            savedVolume = sound.Volume > 0 and sound.Volume or savedVolume
+            sound.Volume = 0
+            volIconBtn.Image = MP_ICON_MUTE
+            volPercent.Text = "0%"
+        else
+            setVolume(savedVolume)
+            volIconBtn.Image = MP_ICON_VOL
+        end
+    end)
+
+    local playlistDD = createPlaylistDropdown(songs, DEFAULT_COUNT, {
+        onSelect = function(idx, song)
+            currentSongIndex = idx
+            songNameLabel.Text = song.Name
+            sound:Stop()
+            sound.SoundId = song.Id
+            task.wait(0.05)
+            sound:Play()
+            isPlaying = true
+            setPlayState(true)
+        end,
+        onDelete = function(idx)
+            table.remove(songs, idx)
+            if currentSongIndex >= idx and currentSongIndex > 1 then
+                currentSongIndex = currentSongIndex - 1
+            end
+            mp_saveCustomSongs(songs, DEFAULT_COUNT)
+            playlistDD.rebuild(songs, DEFAULT_COUNT, playlistDD._cbs)
+        end,
+    })
+    playlistDD._cbs = playlistDD._cbs or {}
+
+    local dropIconImg  = playlistDD.iconImg
+    local dropLabel    = playlistDD.nameLabel
+
+    local function rebuildDropdown()
+        playlistDD.rebuild(songs, DEFAULT_COUNT, {
+            onSelect = function(idx, song)
+                currentSongIndex = idx
+                songNameLabel.Text = song.Name
+                sound:Stop()
+                sound.SoundId = song.Id
+                task.wait(0.05)
+                sound:Play()
+                isPlaying = true
+                setPlayState(true)
+            end,
+            onDelete = function(idx)
+                table.remove(songs, idx)
+                if currentSongIndex >= idx and currentSongIndex > 1 then
+                    currentSongIndex = currentSongIndex - 1
+                end
+                mp_saveCustomSongs(songs, DEFAULT_COUNT)
+                rebuildDropdown()
+            end,
+        })
+    end
+
+    local folderLabelRow = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 14), BackgroundTransparency = 1, BorderSizePixel = 0
+    })
+    makeUI(folderLabelRow, "TextLabel", {
+        Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1,
+        Text = "ZERO MUSIC FOLDER",
+        Font = Enum.Font.GothamBold, TextColor3 = Color3.fromRGB(150, 150, 150),
+        TextSize = 10, TextXAlignment = Enum.TextXAlignment.Left
+    })
+    local folderFrame = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 58),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+        BackgroundTransparency = 0.2, BorderSizePixel = 0
+    })
+    makeUI(folderFrame, "UICorner", { CornerRadius = UDim.new(0, 8) })
+    makeUI(folderFrame, "UIStroke", { Color = Color3.fromRGB(70, 70, 70), Thickness = 1, Transparency = 0.4 })
+    makeUI(folderFrame, "TextLabel", {
+        Size = UDim2.new(1, -12, 0, 18), Position = UDim2.new(0, 8, 0, 4),
+        BackgroundTransparency = 1,
+        Text = "Place .mp3 / .ogg files in:  Zero Music/",
+        Font = Enum.Font.Gotham, TextColor3 = Color3.fromRGB(160, 160, 160),
+        TextSize = 9, TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 3
+    })
+    local scanBtn = makeUI(folderFrame, "TextButton", {
+        Size = UDim2.new(0, 100, 0, 22), Position = UDim2.new(0, 6, 0, 28),
+        BackgroundColor3 = Color3.fromRGB(60, 60, 60), BorderSizePixel = 0,
+        Text = "Scan", Font = Enum.Font.GothamBold,
+        TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 9, ZIndex = 4,
+        AutoButtonColor = false
+    })
+    makeUI(scanBtn, "UICorner", { CornerRadius = UDim.new(0, 5) })
+    local folderStatusLabel = makeUI(folderFrame, "TextLabel", {
+        Size = UDim2.new(1, -120, 0, 22), Position = UDim2.new(0, 112, 0, 28),
+        BackgroundTransparency = 1,
+        Text = mp_canFolderIO() and "Ready (MP3 + OGG)" or "File IO not supported",
+        Font = Enum.Font.Gotham,
+        TextColor3 = mp_canFolderIO() and Color3.fromRGB(100, 200, 120) or Color3.fromRGB(220, 120, 80),
+        TextSize = 9, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 4,
+        TextTruncate = Enum.TextTruncate.AtEnd
+    })
+    local scanBtnTween = nil
+    local scanBtnHovered = false
+    local function setScanColor(color)
+        if scanBtnTween then scanBtnTween:Cancel() end
+        scanBtnTween = TweenService:Create(scanBtn, TweenInfo.new(0.1), { BackgroundColor3 = color })
+        scanBtnTween:Play()
+    end
+    scanBtn.MouseEnter:Connect(function()
+        scanBtnHovered = true
+        setScanColor(Color3.fromRGB(30, 80, 30))
+    end)
+    scanBtn.MouseLeave:Connect(function()
+        scanBtnHovered = false
+        setScanColor(Color3.fromRGB(60, 60, 60))
+    end)
+    scanBtn.MouseButton1Down:Connect(function()
+        setScanColor(scanBtnHovered and Color3.fromRGB(30, 80, 30) or Color3.fromRGB(60, 60, 60))
+    end)
+    scanBtn.MouseButton1Up:Connect(function()
+        setScanColor(scanBtnHovered and Color3.fromRGB(30, 80, 30) or Color3.fromRGB(60, 60, 60))
+    end)
+    scanBtn.MouseButton1Click:Connect(function()
+        if not mp_canFolderIO() then
+            folderStatusLabel.Text = "File IO not supported"
+            folderStatusLabel.TextColor3 = Color3.fromRGB(220, 120, 80)
+            return
+        end
+        folderStatusLabel.Text = "Scanning OGG..."
+        folderStatusLabel.TextColor3 = Color3.fromRGB(200, 200, 100)
+        task.spawn(function()
+            local newSongs = {}
+            for _, s in ipairs(songs) do
+                if not s.IsFile then table.insert(newSongs, s) end
+            end
+            local folderSongs = mp_loadFolderSongs()
+            for _, s in ipairs(folderSongs) do table.insert(newSongs, s) end
+            while #songs > 0 do table.remove(songs) end
+            for _, s in ipairs(newSongs) do table.insert(songs, s) end
+            rebuildDropdown()
+            local count = #folderSongs
+            if count == 0 then
+                folderStatusLabel.Text = "No MP3 or OGG files found in folder"
+                folderStatusLabel.TextColor3 = Color3.fromRGB(200, 160, 60)
+            else
+                folderStatusLabel.Text = count .. " audio file(s) found (MP3/OGG)!"
+                folderStatusLabel.TextColor3 = Color3.fromRGB(100, 220, 120)
+            end
+            task.delay(4, function()
+                if folderStatusLabel then
+                    folderStatusLabel.Text = "Ready (MP3 + OGG)"
+                    folderStatusLabel.TextColor3 = Color3.fromRGB(100, 200, 120)
+                end
+            end)
+        end)
+    end)
+
+    local addLabelRow = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 14), BackgroundTransparency = 1, BorderSizePixel = 0
+    })
+    makeUI(addLabelRow, "TextLabel", {
+        Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Text = "ADD SONG",
+        Font = Enum.Font.GothamBold, TextColor3 = Color3.fromRGB(150,150,150),
+        TextSize = 10, TextXAlignment = Enum.TextXAlignment.Left
+    })
+    local addFrame = makeUI(VipTabContent, "Frame", {
+        Size = UDim2.new(0.95, 0, 0, 72),
+        BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+        BackgroundTransparency = 0.2, BorderSizePixel = 0
+    })
+    makeUI(addFrame, "UICorner", { CornerRadius = UDim.new(0, 8) })
+    makeUI(addFrame, "UIStroke", { Color = Color3.fromRGB(70, 70, 70), Thickness = 1, Transparency = 0.4 })
+    local nameBox = makeUI(addFrame, "TextBox", {
+        Size = UDim2.new(1, -12, 0, 22), Position = UDim2.new(0, 6, 0, 6),
+        BackgroundColor3 = Color3.fromRGB(28, 28, 28), BackgroundTransparency = 0.1,
+        BorderSizePixel = 0, Text = "",
+        PlaceholderText = "Song name...", PlaceholderColor3 = Color3.fromRGB(100, 100, 100),
+        TextColor3 = Color3.fromRGB(220, 220, 220), Font = Enum.Font.Gotham, TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, ZIndex = 6
+    })
+    makeUI(nameBox, "UICorner", { CornerRadius = UDim.new(0, 5) })
+    makeUI(nameBox, "UIPadding", { PaddingLeft = UDim.new(0, 7) })
+    local idBox = makeUI(addFrame, "TextBox", {
+        Size = UDim2.new(1, -62, 0, 22), Position = UDim2.new(0, 6, 0, 34),
+        BackgroundColor3 = Color3.fromRGB(28, 28, 28), BackgroundTransparency = 0.1,
+        BorderSizePixel = 0, Text = "",
+        PlaceholderText = "Sound ID / rbxassetid://...", PlaceholderColor3 = Color3.fromRGB(100, 100, 100),
+        TextColor3 = Color3.fromRGB(220, 220, 220), Font = Enum.Font.Gotham, TextSize = 10,
+        TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, ZIndex = 6
+    })
+    makeUI(idBox, "UICorner", { CornerRadius = UDim.new(0, 5) })
+    makeUI(idBox, "UIPadding", { PaddingLeft = UDim.new(0, 7) })
+    local addBtn = makeUI(addFrame, "TextButton", {
+        Size = UDim2.new(0, 46, 0, 22), Position = UDim2.new(1, -52, 0, 34),
+        BackgroundColor3 = Color3.fromRGB(40, 110, 45), BorderSizePixel = 0,
+        Text = "+ Add", Font = Enum.Font.GothamBold,
+        TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 10, ZIndex = 6
+    })
+    makeUI(addBtn, "UICorner", { CornerRadius = UDim.new(0, 5) })
+    local statusLabel = makeUI(addFrame, "TextLabel", {
+        Size = UDim2.new(1, -12, 0, 12), Position = UDim2.new(0, 6, 1, -14),
+        BackgroundTransparency = 1, Text = "",
+        Font = Enum.Font.Gotham, TextColor3 = Color3.fromRGB(100, 200, 120),
+        TextSize = 9, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 6
+    })
+    addBtn.MouseEnter:Connect(function()
+        TweenService:Create(addBtn, TweenInfo.new(0.1), { BackgroundColor3 = Color3.fromRGB(70, 180, 70) }):Play()
+    end)
+    addBtn.MouseLeave:Connect(function()
+        TweenService:Create(addBtn, TweenInfo.new(0.1), { BackgroundColor3 = Color3.fromRGB(40, 110, 45) }):Play()
+    end)
+    -- Update placeholder to hint MP3/OGG path support
+    idBox.PlaceholderText = "Sound ID, rbxassetid://, or local path"
+
+    addBtn.MouseButton1Click:Connect(function()
+        local rawName = nameBox.Text:match("^%s*(.-)%s*$")
+        local rawId   = idBox.Text:match("^%s*(.-)%s*$")
+        if rawName == "" then
+            statusLabel.Text = "Song name cannot be empty!"
+            statusLabel.TextColor3 = Color3.fromRGB(220, 100, 80)
+            return
+        end
+        if rawId == "" then
+            statusLabel.Text = "Enter a Sound ID or local file path!"
+            statusLabel.TextColor3 = Color3.fromRGB(220, 100, 80)
+            return
+        end
+
+        local finalId
+        local isFile = false
+
+        -- Case 1: already a full rbxassetid:// URI
+        if rawId:match("^rbxassetid://") then
+            finalId = rawId
+
+        -- Case 2: plain numeric Roblox sound ID
+        elseif rawId:match("^%d+$") then
+            finalId = "rbxassetid://" .. rawId
+
+        -- Case 3: local file path (.mp3 or .ogg) -> resolve via GetCustomAsset
+        elseif rawId:lower():match("%.mp3$") or rawId:lower():match("%.ogg$") then
+            if not mp_canFolderIO() then
+                statusLabel.Text = "File IO not supported on this executor!"
+                statusLabel.TextColor3 = Color3.fromRGB(220, 100, 80)
+                return
+            end
+            local okD, data = pcall(readfile, rawId)
+            local ext = (rawId:match("%.([^%.]+)$") or ""):lower()
+            if not mp_validateAudioFile(data, ext) then
+                statusLabel.Text = "File not found or corrupt: " .. rawId
+                statusLabel.TextColor3 = Color3.fromRGB(220, 100, 80)
+                return
+            end
+            local resolved = mp_resolveLocalAudio(rawId)
+            if not resolved then
+                statusLabel.Text = "GetCustomAsset() failed for this file!"
+                statusLabel.TextColor3 = Color3.fromRGB(220, 100, 80)
+                return
+            end
+            finalId = resolved
+            isFile  = true
+
+        else
+            statusLabel.Text = "Invalid input! Use ID, rbxassetid://, or .mp3/.ogg path"
+            statusLabel.TextColor3 = Color3.fromRGB(220, 100, 80)
+            return
+        end
+
+        table.insert(songs, {
+            Name    = rawName,
+            Id      = finalId,
+            Icon    = MP_ICON_SONG,
+            IsFile  = isFile,
+            RawPath = isFile and rawId or nil,
+            CanPlay = true,
+        })
+        mp_saveCustomSongs(songs, DEFAULT_COUNT)
+        rebuildDropdown()
+        nameBox.Text = ""; idBox.Text = ""
+        statusLabel.Text = "\"" .. rawName .. "\" added" .. (mp_canFileIO() and " & saved!" or " (no file IO)")
+        statusLabel.TextColor3 = Color3.fromRGB(100, 200, 120)
+        task.delay(3, function() if statusLabel then statusLabel.Text = "" end end)
+    end)
+
+    local isChangingSong = false
+    local function playSong(idx, autoPlay)
+        isChangingSong = true
+        currentSongIndex = idx
+        sound:Stop()
+        sound.TimePosition = 0
+        local songEntry = songs[idx]
+        if songEntry.IsFile then
+            if songEntry.CanPlay == false then
+                songNameLabel.Text = "File corrupt or unsupported format!"
+                isPlaying = false
+                setPlayState(false)
+                task.defer(function() isChangingSong = false end)
+                return
+            end
+            local assigned = false
+            -- Prefer cached resolved ID (already a rbxasset:// URI from GetCustomAsset)
+            if songEntry.Id and songEntry.Id ~= "" then
+                local ok1 = pcall(function() sound.SoundId = songEntry.Id end)
+                if ok1 then assigned = true end
+            end
+            -- If cache miss, re-resolve via GetCustomAsset (works for both MP3 and OGG)
+            if not assigned and songEntry.RawPath then
+                local resolved = mp_resolveLocalAudio(songEntry.RawPath)
+                if resolved then
+                    songEntry.Id = resolved  -- cache for next time
+                    local ok2 = pcall(function() sound.SoundId = resolved end)
+                    if ok2 then assigned = true end
+                end
+            end
+            if not assigned then
+                local fmt = songEntry.FileExt and songEntry.FileExt:upper() or "audio"
+                songNameLabel.Text = "Failed to load " .. fmt .. " file!"
+                isPlaying = false
+                setPlayState(false)
+                task.defer(function() isChangingSong = false end)
+                return
+            end
+        else
+            sound.SoundId = songEntry.Id
+        end
+        songNameLabel.Text = songEntry.Name
+        dropIconImg.Image = songEntry.Icon
+        dropLabel.Text = songEntry.Name
+        if autoPlay then
+            isPlaying = true
+            setPlayState(true)
+            task.spawn(function()
+                pcall(function()
+                    if not sound.IsLoaded then sound.Loaded:Wait() end
+                    sound.TimePosition = 0
+                    sound:Play()
+                end)
+            end)
+        end
+        task.defer(function() isChangingSong = false end)
+    end
+    playSong(1, false)
+
+    playClick.MouseButton1Click:Connect(function()
+        if not isPlaying then sound:Resume(); isPlaying = true; setPlayState(true)
+        else sound:Pause(); isPlaying = false; setPlayState(false) end
+    end)
+    nextClick.MouseButton1Click:Connect(function() playSong(currentSongIndex % #songs + 1, true) end)
+    prevClick.MouseButton1Click:Connect(function() playSong(((currentSongIndex-2) % #songs)+1, true) end)
+    sound.Ended:Connect(function()
+        if isChangingSong then return end
+        if isPlaying then
+            task.defer(function()
+                pcall(function()
+                    playSong(currentSongIndex % #songs + 1, true)
+                end)
+            end)
+        end
+    end)
+
+    RunService.Heartbeat:Connect(function(dt)
+        if not isScrubbing and sound.IsLoaded and sound.TimeLength and sound.TimeLength > 0 then
+            local pos = sound.TimePosition or 0
+            local len = sound.TimeLength
+            local ratio = pos / len
+            progressBar.Size = UDim2.new(ratio, 0, 1, 0)
+            progressThumb.Position = UDim2.new(ratio, 0, 0.5, 0)
+            currentTimeLabel.Text = formatTime(pos)
+            totalTimeLabel.Text = formatTime(len)
+        end
+        if isPlaying then
+            vizPhase = vizPhase + dt * 5
+            animPhase = animPhase + dt * 4.5
+        end
+        updateViz(isPlaying, isMuted and 0 or savedVolume)
+        updateVolBars(isMuted and 0 or savedVolume, animPhase, isPlaying)
+        for i = 1, BAR_COUNT do
+            local cur = bars[i].Size.Y.Offset
+            local tgt = barTargetH[i]
+            local new = cur + (tgt - cur) * 0.25
+            bars[i].Size = UDim2.new(0, BAR_W, 0, new)
+            bars[i].Position = UDim2.new(0, (i-1)*(BAR_W+BAR_GAP), 1, -new)
+        end
+    end)
+end
+
     setupVipTab = function()
         local isVipLocked = not hasPermission("VIP")
         UI.createToggle(VipTabContent, "Emote VIP", isEmoteEnabled, function(v)
@@ -10201,6 +11197,19 @@ return function(sessionDataOrTimestamp, userRoleLegacy)
             if isAnimationEnabled and applyAnimationTransparency then applyAnimationTransparency(v) end
             saveFeatureStates()
         end, isVipLocked, "VIP").LayoutOrder = 4
+        UI.createToggle(VipTabContent, "Music Player", isMusicPlayerEnabled, function(v)
+            isMusicPlayerEnabled = v
+            if v then
+                pcall(createMusicPlayerPage)
+                if VipTabContent:FindFirstChild("ZeroMusicPlayer") then
+                    VipTabContent.ZeroMusicPlayer.Visible = true
+                end
+            else
+                if VipTabContent:FindFirstChild("ZeroMusicPlayer") then
+                    VipTabContent.ZeroMusicPlayer.Visible = false
+                end
+            end
+        end, isVipLocked, "VIP").LayoutOrder = 5
     end
     
     setupServerTab = function()
