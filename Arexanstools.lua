@@ -15061,38 +15061,38 @@ local function startBackgroundRecordingForPlayer(player)
                 grounded = (c_hum.FloorMaterial ~= Enum.Material.Air)
             })
 
-            if isNearAutoPerfectSummit and isNearAutoPerfectSummit(c_hrp.Position) then
-                if #recData.frames > 20 then
-                    local cleanFrames = optimizeRecordingFramesLowLag(recData.frames, false)
-                    if #cleanFrames > 2 then
-                        local baseName = "BG Winner " .. player.Name
-                        local newName, i = baseName, 1
-                        while savedRecordings[newName] do
-                            i = i + 1
-                            newName = baseName .. " " .. i
-                        end
-                        savedRecordings[newName] = {
-                            frames = cleanFrames,
-                            targetUserId = player.UserId,
-                            startPosition = cleanFrames[1].position,
-                            startRotation = cleanFrames[1].rotation,
-                            recordFps = SAMPLE_RATE,
-                        }
-                        saveRecordingsData()
-                        if updateRecordingsList then updateRecordingsList() end
-                        showNotification("Player " .. player.Name .. " mencapai finish! Jejak BG Record disimpan.", Color3.fromRGB(50, 200, 100))
-                    end
-                end
-                recData.frames = {}
-                recData.startTime = tick()
-                recData.lastTime = 0
-            end
-
             -- Limit memory usage to last ~5 minutes to prevent lag while capturing full run
             local maxFrames = (tonumber(SAMPLE_RATE) or 20) * 300
             if #recData.frames > maxFrames then
                 table.remove(recData.frames, 1)
             end
+        end
+
+        if isNearAutoPerfectSummit and isNearAutoPerfectSummit(c_hrp.Position) then
+            if #recData.frames > 20 then
+                local cleanFrames = optimizeRecordingFramesLowLag(recData.frames, false)
+                if #cleanFrames > 2 then
+                    local baseName = "BG Winner " .. player.Name
+                    local newName, i = baseName, 1
+                    while savedRecordings[newName] do
+                        i = i + 1
+                        newName = baseName .. " " .. i
+                    end
+                    savedRecordings[newName] = {
+                        frames = cleanFrames,
+                        targetUserId = player.UserId,
+                        startPosition = cleanFrames[1].position,
+                        startRotation = cleanFrames[1].rotation,
+                        recordFps = SAMPLE_RATE,
+                    }
+                    saveRecordingsData()
+                    if updateRecordingsList then updateRecordingsList() end
+                    showNotification("Player " .. player.Name .. " mencapai finish! Jejak BG Record disimpan.", Color3.fromRGB(50, 200, 100))
+                end
+            end
+            recData.frames = {}
+            recData.startTime = tick()
+            recData.lastTime = 0
         end
     end)
 end
